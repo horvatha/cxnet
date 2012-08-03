@@ -1,0 +1,2 @@
+recursive-include doc *txt img/*png Makefile conf.py
+include README.txt AUTHORS

@@ -1,0 +1,484 @@
+..
+  _installhu-index
+
+=====================================================================
+cxnet -- Összetett hálózatok az oktatásban
+=====================================================================
+
+:Szerző: Horváth Árpád
+:Levélcím: horvath.arpad kukac roik.bmf.hu
+:Dátum: 2010. nyár
+
+`In English (angolul) <install_en.html>`_
+
+Előkövetelmények
+================
+
+.. figure:: img/cxnetdep_hu.png
+    :scale: 70%
+
+    A cxnet csomag függőségei
+
+A cxnet legtöbb lehetőségéhez szükséges a
+`IGraph <http://igraph.sourceforge.net>`_ vagy a `NetworkX <http://networkx.lanl.gov/>`_.
+Az IGraph telepítését `angolul a Wikidot részletezi <http://igraph.wikidot.com/installing-python-igraph>`_.
+
+Néhány lehetőséghez szükséges:
+
+* `a matplotlib grafikonrajzoló eszköz (benne pylab) <http://matplotlib.sourceforge.net/>`_
+* `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_,
+* `python-pygraphviz <http://pypi.python.org/pypi/pygraphviz>`_,
+
+A legtöbb előkövetelmény teljesítését az `Az IGraph telepítése és használata`_,  a `A NetworkX telepítése és használata`_ és a
+`Pylab telepítés és indítás`_ szakaszban ismertetett módon teljesíthetjük Ubuntu és Debian alatt.
+
+A cxnet telepítése
+==================================================
+
+Egyik lehetőség, hogy a szokásos telepítési módszert alkalmazzuk. Letöltjük a
+forrást (.tar.gz) `a Python Package Indexről
+<http://pypi.python.org/pypi/cxnet>`_ és telepítjük::
+
+  wget http://pypi.python.org/packages/source/c/cxnet/cxnet-0.2.tar.gz
+  tar xzf cxnet-0.2.tar.gz
+  cd cxnet-0.2
+  python setup.py install
+
+UNIX/Linux rendszereken az utolsó lépéshez adminisztártornak kell lenni, tehát
+használja a su vagy sudo parancsok egyikét, ha nem root.
+
+A network evolution használatához a forráskönyvtárban kell dolgozni, úgyhogy ez a módszer
+ajánlatos, vagy a `Bazaar-ral <http://bazaar.canonical.com>`_ történő letöltés::
+
+    bzr branch http://www.arek.uni-obuda.hu/cxnet
+
+A másik lehetőség a telepítére, ha telepítve van az easy-install vagy a pip
+akkor csak a megfelelő sort kell beírni::
+
+  easy-install cxnet
+  or
+  pip install cxnet
+
+Ezekhez szintén adminisztrátornak kell lenni a UNIX/Linux rendszereken.
+
+Hasznos matematikai programok telepítése és használata főként Ubuntun
+=====================================================================
+
+Nem szándékozunk részletes leírást adni az egyes
+programok használatáról, csupán bemutatjuk telepítésüket, és egy kis
+ízelítőt adunk a tudásukból.
+
+
+A példák **Ubuntun** lettek kipróbálva, de vélhetően hasonlóan működnek más
+Linux rendszer alatt is.
+Az Ubuntu Jauntyval (9.04) és újabb verziók alatt biztosan működnek.
+
+Először a `Python <http://www.python.org>`_ programozási nyelvre épülő
+lehetőségeket mutatjuk be. A Python alapjai elsajátíthatóak például
+a `hivatalos oktató magyar nyelvű változatából
+<http://pythonlib.pergamen.hu/html/tut/>`_ is.
+Angol nyelven a `hivatalos dokumentáción <http://docs.python.org>`_
+kívül a Dive into Python-t tudom ajánlani (még egyelőre ne a Python3-as
+verziót).
+
+Megjegyzések más rendszerek felhasználóinak
+==================================================
+
+**Debian** alatt többnyire ugyanolyan néven érhetőek el a csomagok és
+ugyanúgy telepíthetőek, mint Ubuntu alatt. A jelenlegi (2010. nyár)
+stabil változatban (lenny) vannak meg jól a csomagok: ott az
+alapértelmezett python a python2.5, és a python-pygraphviz csomag is
+létezik. A korábbi stabil változattal bütykölni kell. 
+
+RPM alapú disztribúciók
+-----------------------
+
+A program az elsődlegesen a debian csomagokra épülő apt
+csomagkezelőt használja. Ennek beüzemelését RPM alapú disztribúciók alatt
+nem próbáltam, de többnyire megtalálható az ``apt`` csomag a tárolókban
+(Mandriván, Fedorán és Scientific Linux alatt igen).
+Talán telepíthető az `rpmfind oldalon
+<http://www.rpmfind.net/linux/rpm2html/search.php?query=python-apt>`_
+található RPM csomagokból a python-apt.
+Hasonlóan érdemes keresni az `rmpfind python-igraph
+<http://www.rpmfind.net/linux/rpm2html/search.php?query=python-igraph>`_
+és `python-networkx csomagjai közül
+<http://www.rpmfind.net/linux/rpm2html/search.php?query=python-networkx>`_.
+
+
+**Fedora** alatt jelenleg (2008. nyár) létezik ``numpy``, ``scipy``,
+``matplotlib``, ``ipython``, ``tetex-beamer``  nevű csomag, nem találtam
+``networkx``-et, úgyhogy az a `NetworkX honlapról
+<https://networkx.lanl.gov>`_ kell gondolom tar.gz-ből feltenni.
+
+**Mandriva** alatt jelenleg (2008. szeptember 2.) létezik ``python-numpy``,
+``python-scipy``,
+``python-matplotlib``, ``ipython``, ``latex-beamer``  nevű csomag, nem találtam
+``networkx``-et, úgyhogy az a `NetworkX honlapról
+<https://networkx.lanl.gov>`_ kell gondolom tar.gz-ből feltenni.
+Egyes gépekre
+`ez az RPM-csomag
+<http://www.rpmfind.net/linux/rpm2html/search.php?query=python-networkx>`_
+is jó lehet. Más architekturákra is találhatunk változtatokat, ha rákeresünk a
+python-networkx csomagra.
+
+Windows
+-------
+
+**Windows** felhasználóknak érdemes megnézni a `EasyInstallt
+<http://peak.telecommunity.com/DevCenter/EasyInstall>`_. Másik lehetőség az `Entougth
+Python Distribution <http://www.enthought.com/products/epd.php>`_ mellyel a
+telepítés egyszerűbbek lehet, mint a csomagok összevadászásával,
+használata oktatási célokra ingyenes, és tartalmazza a scipy, numpy,
+ipython, matplotlib csomagokat.
+Ezekkel a Python-IGraph, az IPython és a NetworkX telepítése megtehető a `Python hivatalos oldaláról
+letölthető <http://pypi.python.org>`_ eggek-ből (tojásokból).
+
+További oldalak a telepítésről
+-------------------------------
+Ha valakinek nem sikerült, hátha az alábbi oldalak segítenek.
+
+`Myers: The World is Your Python
+<http://pages.physics.cornell.edu/~myers/teaching/ComputationalMethods/python/WorldPy.html>`_
+Lent Installation instructions (Linux, Windows és Mac OS)
+
+`A Scipy cluster <http://code.google.com/p/scipy-cluster/>`_ oldala.
+Ennek a csomagnak a használatához több itt említett programra szükség
+van, ezért leírja a telepítésüket néhány platformon.
+
+Pylab telepítés és indítás
+===========================
+
+A pylab a `matplotlib <http://matplotlib.sf.net>`_ csomag része és a 
+célja MATLAB-hoz hasonló függvényeket nyújtson, amennyire az a Python
+nyelvvel összeegyeztethető.
+
+Az alábbi példában láthatjuk, hogyan telepíthetjük a Pylab-ot és az
+mekkora területet használ fel az Ubuntuban alapból telepített csomagokon
+felül.
+Ez a MATLAB fél gigabájtjához képest elenyésző, és `szabad
+szoftver <http://hu.wikipedia.org/wiki/szabad_szoftver>`_.
+Vannak hiányosságai a MATLAB-hoz képest (pl. háromdimenziós grafikonok,
+felületek ábrázolása), de előnyei is (pl. a python összes csomagja
+használható, CGI-szkriptbe vagy Django-oldalba ágyazhatjuk a
+programunkat.
+(Itt és a továbbiakban a $ csak a parancsértelmező (shell) promptját jelöli,
+nem kell beírni.)::
+
+  $ sudo apt-get install texlive-latex-extra texlive-lang-hungarian python-scipy ipython python-matplotlib latex-beamer
+   (...)
+  Az alábbi ÚJ csomagok lesznek telepítve:
+    blt dvipng ipython libblas3gf libfftw3-3 libgfortran2 liblapack3gf
+    libsuitesparse-3.1.0 libt1-5 python-configobj python-dateutil python-dev
+    python-enthought-traits python-matplotlib python-matplotlib-data
+    python-numpy python-pexpect python-scipy python-tk python-tz python2.5-dev
+    tcl8.4 tex-common texlive-base texlive-base-bin texlive-common
+    texlive-doc-base texlive-latex-base texlive-latex-recommended tk8.4
+    (...)
+  0 frissített, 30 újonnan telepített, 0 eltávolítandó és 0 nem frissített.
+  Letöltés az archívumokból: 38,0MB
+  A művelet végrehajtása után 128MB lemezterület kerül felhasználásra.
+  Folytatni akarod [Y/n]? 
+
+Ez telepíti a következőket:
+
+- a ``python-numpy`` csomagot, mely a mátrixműveletekhez kell.
+- a ``python-scipy`` csomagot, mely itovábbi tudományos számításokat
+  tesz lehetővé, például numerikus integrálást, gyors
+  Fourier-transzformációt (FFT) vagy szélsőérték-keresést.
+- a ``python-matplotlib`` csomagot, mely a grafikonok rajzolásához kell.
+- a `LaTeX <http://hu.wikipedia.org/wiki/LaTeX>`_-hez szükséges
+  legfontosabb fájlokat.
+- ``latex-beamer``-ben lehet szép  LaTeX-es prezentációt írni
+
+Az ipython egy másik interaktív python parancsértelmező, így indítjuk::
+
+  $ ipython
+  vagy
+  $ ipython -pylab
+
+A pylabos változatban egy
+halom matematikai függvény elérhető, és a függvényábrázolás egyszerűbb.
+Továbbiakban ezt feltételezzük.
+A sima parancsértelmező a ``python`` paranccsal indul,
+a `Python honlapon <http://python.org>`_ található oktatók (tutorial)
+ennek a promptját tartalmazzák, ami eltér az ipythonostól::
+
+  $ python
+  Python 2.5.2 (r252:60911, Apr 21 2008, 11:12:42) 
+  [GCC 4.2.3 (Ubuntu 4.2.3-2ubuntu7)] on linux2
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> for i in [1,3,5,7]:
+  ...   print i, i**3
+  ... 
+  1 1
+  3 27
+  5 125
+  7 343
+  >>> 
+
+Függvényábrázolás
+=================
+
+A pylab MATLAB-hoz hasonló szintaktikát alkalmaz, amennyire a Python
+nyelv erre lehetőséget ad. Az alábbi példasorok MATLAB-ban is ugyanúgy
+működnek mint itt::
+
+  $ ipython -pylab
+  Python 2.5.2 (r252:60911, Apr 21 2008, 11:12:42) 
+  Type "copyright", "credits" or "license" for more information.
+  
+  IPython 0.8.1 -- An enhanced Interactive Python.
+  ?       -> Introduction to IPython's features.
+  %magic  -> Information about IPython's 'magic' % functions.
+  help    -> Python's own help system.
+  object? -> Details about 'object'. ?object also works, ?? prints more.
+  
+    Welcome to pylab, a matplotlib-based Python environment.
+    For more information, type 'help(pylab)'.
+  
+  In [1]: x=linspace(0, 3*pi, 100)
+  In [2]: plot(x, sin(x))
+  Out[2]: [<matplotlib.lines.Line2D instance at 0x8b444ec>]
+
+Eredményül az alábbi ábrát kapjuk egy ablakban:
+
+.. image:: img/sinus.png
+
+Egy kis szótár a gráfokhoz
+===========================
+
++----------------------------------+---------------------------------+
+| angol                            | magyar                          |
++==================================+=================================+
+| edge                             | él                              |
++----------------------------------+---------------------------------+
+| node,                            | csúcs                           |
+| vertex (többesszáma verticies)   |                                 |
++----------------------------------+---------------------------------+
+| graph                            | gráf                            |
++----------------------------------+---------------------------------+
+| directed graph                   | irányított gráf                 |
++----------------------------------+---------------------------------+
+| path                             | út (egymás utáni élek)          |
++----------------------------------+---------------------------------+
+| degree                           | fokszám (csúcshoz kapcsolódó    |
+|                                  | élek száma)                     |
++----------------------------------+---------------------------------+
+| outward pointing edges           | kifelé mutató élek, ki-élek     |
++----------------------------------+---------------------------------+
+| cycle                            | kör                             |
++----------------------------------+---------------------------------+
+| acyclic graph                    | körmentes gráf                  |
++----------------------------------+---------------------------------+
+| connected                        | összefüggő                      |
++----------------------------------+---------------------------------+
+
+Az IGraph telepítése és használata
+===============================================
+
+Eddig nem írtunk a telepítéséről. A telepítők és forráskódok megtalálhatóak az
+`IGraph oldalán <http://igraph.sourceforge.net/download.html>`_.
+Telepítéséről az `IGraph wikijében <http://igraph.wikidot.com/installing-python-igraph>`_
+van leírás.
+
+..
+  You can use the standard installation method. Download the source
+  (.tar.gz) manually from the Python Package Index <http://pypi.python.org/pypi/python-igraph>`_, and install it::
+
+  wget http://pypi.python.org/packages/source/p/python-igraph/python-igraph-0.5.3.tar.gz
+  tar xzf python-igraph-0.5.3.tar.gz
+  cd python-igraph-0.5.3
+  python setup.py install
+
+
+Bár a csúcsoknak lehet nevet adni, alapból 0-tól kezdődő sorszámok azonosítják.
+A csúcsok hozzáadásakor (4. lépés) csak darabszámot kell megadni. A speciális
+gráfokat (``Full``, ``Barabasi``, ``Erdos_Renyi``) a ``Graph`` osztály
+osztálymetódusaiként érhetjük el (5. lépés). Gyors összefoglalót egy gráfról a
+``summary`` függvénnyel kaphatunk (7. lépés).::
+
+  In [1]: import igraph
+
+  In [2]: g=igraph.Graph()
+
+  In [3]: g.add_vertices(8)
+  Out[3]: <igraph.Graph object at 0x905ef2c>
+
+  In [4]: g.add_edges([(1,2), (2,4), (3,5)])
+  Out[4]: <igraph.Graph object at 0x905ef2c>
+
+  In [5]: g=igraph.Graph.Full(9)
+
+  In [6]: g.delete_edges([(3,4), (6,7), (0,1)])
+  Out[6]: <igraph.Graph object at 0x905eaac>
+
+  In [7]: igraph.summary(g)
+  9 nodes, 33 edges, undirected
+
+  Number of components: 1
+  Diameter: 2
+  Density: 0.9167
+  Average path length: 1.0833
+
+  In [8]: igraph.plot(g, layout="circular")
+  Out[8]: <igraph.drawing.Plot object at 0x911556c>
+
+Az elrendezés (layout) határozza meg, hová kerünek az egyes csúcsok az ábrán.
+Ábrákhoz gyakran érdemes a ``"circular"`` vagy ``"kk"`` (kamada-kawai) elrendezést (layout) használni.
+A 8. lépésben a következő ábrát kapjuk:
+
+.. image:: img/almostfull.png
+
+A gráfábrák készítéséhez nincs szükség a ``-pylab`` opcióra.
+
+A NetworkX telepítése és használata
+================================================
+
+Honlap: http://networkx.lanl.gov/wiki
+
+Telepítsük a ``python-networkx`` csomagot::
+
+  $ sudo apt-get install python-networkx
+
+**Megjegyzés a NetworkX modul telepítéséhez.**
+Ha máshogy nem megy a **NetworkX telepítése**, vagy a 0.99-esnél régebbi
+verziót tartalmaz a rendszerünk akkor a következőkképpen is eljárhatunk.
+`Töltsük le innen a forrást <http://networkx.lanl.gov/download/networkx>`_ és
+csomagoljuk ki belőle a networkx könyvtárat.  Ha abban a könyvtárban dolgozunk,
+amiben ez a könyvtár van, akkor ez a modul be fog töltődni. Használhatjuk ezt a
+megoldást arra is, hogy a gépünkön lévő másik változat mellett ezt a változatot
+használjuk.
+
+Indítsuk el az ``ipython``-t  a ``pylab`` opcióval és dolgozzunk vele::
+
+ $ ipython -pylab
+ (...)
+ In [1]: import networkx
+ 
+ In [2]: G = networkx.Graph()
+ 
+ In [3]: G.add_edge(1,3)
+ 
+ In [4]: G.add_cycle([3,4,5,2])
+ 
+ In [5]: networkx.draw(G)
+
+Ezzel létrehoztunk és kirajzoltunk egy gráfot:
+
+.. image:: img/draw_graph.png
+
+``pylab`` opció nélkül vagy egy programban még szükség lett volna a
+következő sorokra::
+
+ import pylab  # Akárhol, akár az elején is
+ pylab.show()  # A networkx.draw után
+
+A fenti példában létrehoztunk egy irányítatlan gráfot, majd hozzáadtun
+egy élt majd egy kört. A G-nek egy halom metódusa (tagfüggvénye) van.
+Mindet megtudhatjuk, ha az ipythonban ``G.`` után ``<Tab>``-ot nyomunk::
+
+ In [7]: G.
+ G.add_cycle          G.__doc__            G.neighbors_iter
+ G.add_edge           G.edge_boundary      G.__new__
+ G.add_edges_from     G.edges              G.node_boundary
+ G.add_node           G.edges_iter         G.nodes
+ G.add_nodes_from     G.__getattribute__   G.nodes_iter
+ G.add_path           G.get_edge           G.number_of_edges
+ G.adj                G.__getitem__        G.number_of_nodes
+ G.__class__          G.has_edge           G.order
+ G.clear              G.__hash__           G.prepare_nbunch
+ G.__contains__       G.has_neighbor       G.__reduce__
+ G.copy               G.has_node           G.__reduce_ex__
+ G.degree             G.info               G.__repr__
+ G.degree_iter        G.__init__           G.__setattr__
+ G.__delattr__        G.is_directed        G.size
+ G.delete_edge        G.__iter__           G.__str__
+ G.delete_edges_from  G.__len__            G.subgraph
+ G.delete_node        G.__module__         G.to_directed
+ G.delete_nodes_from  G.name               G.to_undirected
+ G.__dict__           G.neighbors          G.__weakref__
+
+Az ``add_cycle`` parancshoz hasonlóan útvonalat is hozzáadhatunk az
+``add_path`` paranccsal. Mindkettő argumentumának jó a lista.
+Megkérdezhetjük egy csúcs fokszámát ``degree``,
+vagy hogy szomszédja-e egy másik ``has_neighbor`` (logikai értéket ad).
+Esetleg irányított gráffá is alakíthatjuk ``to_directed``.
+Ha valamelyikről leírást szeretnénk ipythonban, kérdőjelet rakjunk utána::
+
+  In [8]: G.degree(3)
+  Out[8]: 3
+  
+  In [9]: G.has_neighbor?
+  Type:		instancemethod
+  Base Class:	<type 'instancemethod'>
+  String Form:	<bound method Graph.has_neighbor of
+  <networkx.graph.Graph object at 0x8a05eac>>
+  Namespace:	Interactive
+  File:		/var/lib/python-support/python2.5/networkx/graph.py
+  Definition:	G.has_neighbor(self, u, v)
+  Docstring:
+      Return True if node u has neighbor v.
+      
+      This is equivalent to has_edge(u,v).
+  
+  
+  In [10]: G.has_neighbor(1,3)
+  Out[10]: True
+  
+  In [11]: G.add_path([1,6,7,9,8])
+  
+  In [12]: D = G.to_directed()
+
+Feladatok
+---------
+
+#. Rajzoljuk ki az átalakított D gráfot.
+#. Adjunk hozzá D-hez egy újabb útvonalat. Milyen éleket hoztunk létre?
+#. Adjunk hozzá egy élt D-hez.
+#. Irassuk ki egy csúcs ki-fokszámát (kimenő éleinek számát). (Segít a ``<Tab>``.)
+
+Szimbolikus számítások sympy-vel
+================================
+
+Ez egy adalék inkább érdekességképpen.
+
+Telepítsük a ``sympy`` csomagot és indítsuk el az értelemzőt::
+
+ $ sudo apt-get install python-sympy
+ $ isympy
+
+Ez utóbbi értelmező az ``ipython`` egy változata. A kimenetet szebb
+formában hozza létre, mint alapfokú indításkor, és rögtön használhatjuk
+az x, y, z valós, és k, m, n egész szimbólumokat.
+
+Lássuk miket tudunk vele csinálni. Például szimbolikusan
+differenciálni::
+
+ In [7]: s = x**4 + sin(4*x)
+ 
+ In [8]: diff(s, x)
+ Out[8]: 
+    3             
+ 4*x  + 4*cos(4*x)
+
+Most integráljuk ugyenezt a függvényt::
+
+ In [3]: integrate(s,x)
+ Out[3]: 
+               5
+   cos(4*x)   x 
+ - ──────── + ──
+      4       5 
+
+UTF-8-as kódolású terminálokon (az Ubuntuban a GNOME terminálja ilyen)
+kihasználja a kódolás adta lehetőségeket az eredmény (pi*képzetes
+egység) kiirásakor::
+
+ In [4]: log(-1)
+ Out[4]: π*ⅈ
+
+
+
+
+

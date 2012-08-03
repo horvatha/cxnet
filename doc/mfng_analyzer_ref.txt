@@ -1,0 +1,11 @@
+==========================
+The mfng.analyzer module
+==========================
+.. module:: mfng.analyzer
+
+The Runs class
+===============
+
+.. autoclass:: mfng.analyzer.Runs
+  :members: set_labels, plot_energy_list, plot_divs_list, loglog, loglog1, degdist
+

@@ -1,0 +1,99 @@
+=========================
+  Network Evolution
+=========================
+
+Usage
+=====
+
+To run the simulation you need one of the third-party modules: IGraph or
+NetworkX.
+
+In the ``settings.py``:
+
+- You can choose IGraph or NetworkX by setting the boolean variable
+  use_igraph_module to True or False.
+
+- You can set the directory where the measured values are stored.
+
+The simulations can be started with the ``runs.py`` program described below.
+
+The measured values are stored in Python shelves, in hierarchical
+databases.  These can be viewed with the shelve module of the standard
+library of Python.  The ``analyze.py`` program (as main program or as module) can
+help to search the data you need, calculate a formula from the values and plot
+them.
+
+If you want to plot diagrams, you need the matplotlib library.
+The repositories of Linux distributions usually include it with the name
+``python-matplotlib``.
+
+run.py
+======
+
+To run the simulation of a network evolution you need to use the runs.py program.
+To see the options of ``runs.py`` file::
+
+	python runs.py --help
+
+(On UNIX/Linux systems it runs without python command, but if the path
+is not in ``$PATH``, one need the form ``./runs.py``)
+
+There are two important options can be set for the simulation in this
+version: R and beta, explained below.
+
+In each step there can be two types of step changing the number of vertices.
+
+- p_g is the possibility the growth (for example by using a Barabási--Albert
+  step) in a timestep.
+
+- p_d is the possibility the death of a vertex (for example by random removing
+  of an infected one) in a timestep.
+
+- R = p_g/p_d   We use  p_g + p_d = 1, so p_g and p_d are calculated by the
+  program.
+
+  E.g. if R is 1.5, then p_g = 60% and p_d = 40%.
+
+- beta is the disease spreading probability (for one timestep to one neighbour).
+
+In the simulation a list of R and beta values can be given as the options of
+``runs.py``, and one simulation runs for all (R, beta) pairs.
+
+A simulation breaks if it exceeds a given vertex number or a given time limit.
+These parameters can be set by options too.
+
+The frequency of the measurements can be given in the ``runs.py`` program.
+The values from the measurements are stored in a datebase using the shelve modul
+of Python.
+If we run ``runs.py`` there will created one database file, and all the simulations
+with the distinct R and beta values will be stored in this one database.
+The database files are by default in the ``network_evolution/Runs`` directory. The
+directory can be changed in the ``settings.py`` file.
+
+..
+    Installing NetworkX
+    ===================
+
+    If the installed version on the computer is older than version 0.99 or
+    it is not installed, you can get it.  From the parent directory you
+    should run::
+
+            python get_networkx.py
+
+    The package will be in the parent directory as a directory named
+    networkx, so you do not need to be an administrator, but you can use it
+    only in this directory.
+
+    In the NetworkEvolution program the parent directory is in the system
+    path, so the program finds it.
+
+    Installing IGraph
+    =================
+
+    IGraph is a program written in C, and it has a Python interface. It is
+    very fast but harder to install. First of all you need to install its C
+    core. For this consult the Installation chapter of the iGraph
+    reference manual. The manual can be found here:
+
+    http://igraph.sourceforge.net/documentation.html
+

@@ -1,0 +1,51 @@
+Általában
+=========
+
+- A kiiratást egységes osztály kezelje.
+- Kisvideo a használatáról.
+- MANIFEST.in what is it for? to be deleted?
+
+Bug
+===
+
+- net.plot name attributum nélkül nem megy.
+- Újabb networkx-ek Graph osztályaival nem megy a DegreeDistriution
+- Régibb networkx-ekben nincs ego_graph, ami acxneighborhoz kell.
+- plot_with_networkx a test/testplot.py-ben üres ábrát ad.
+
+Dokumentáció
+=================
+
+- plot_with_networkx
+- a network_evolution használatát (README) is a doc-ba.
+
+Telepítés
+=================
+
+- easy-installal, pip-pel telepíthető legyen.
+
+
+NetworkEvolution
+================
+- Kivenni a fájlba írást a NetworkEvolution osztályból.
+
+Csomagok
+========
+
+- Ügyesebben rajzoltatni a szomszédokat. Pl. "nn" csomagnál lehet úgy,
+  hogy ne legyen kereszteződés.
+- Az architektúra, bzr revision, MAC-address legyen a leírásban
+- A leírás a gml-ben legyen.
+- Áttérjünk GraphML-re?
+- Megtudni, hogy van-e a Windowsnak csomagrendszere.
+- Csoporterősségi együtthatók függése
+- base csoportú csomagok
+
+Hálózatgeneráló
+===============
+
+lásd mfng/TODO.txt
+
+- Berajzoltatni a közelítő hatványfüggvényt.
+- Elkészíteni a clusteres gráfokat.
+

@@ -1,0 +1,25 @@
+==========================
+The mfng module
+==========================
+
+This is the reference of the ``mfng`` module. The references have been
+created mainly from the documentation strings of the program, so it is
+quite up-to-date. If you want to learn the basics of the mfng, see the 
+`tutorial <mfng_en>`_.
+
+.. module:: mfng
+
+.. autoclass:: mfng.Generator
+  :members: append_property, go
+
+Classes for target properties
+==============================
+
+.. autoclass:: mfng.DistributionFunction
+
+.. autoclass:: mfng.AverageDegree
+
+..
+  autoclass:: mfng.DistributionFunction
+  :members: set_labels, plot_energy_list, plot_divs_list, loglog, degdist
+

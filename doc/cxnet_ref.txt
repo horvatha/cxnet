@@ -1,0 +1,39 @@
+=============================
+The cxnet module with igraph
+=============================
+.. module:: cxnet
+
+The functions and classes documented below are valid if you use the
+cxnet with igraph. If you want to use **cxnet with networkx**, the usage of
+the functions and classes or even the existence of them **may differ**.
+
+Creating and getting networks
+===============================
+.. autofunction:: cxnet.debnetwork
+
+.. autofunction:: cxnet.load_netdata
+
+.. autofunction:: cxnet.get_netdata
+
+The Network class
+==================
+
+The Network class is derived from the igraph.Graph class. The Graph class is
+imported in the cxnet class for convenience, so it is available as:
+
+.. class:: cxnet.Graph
+
+  The methods of the Graph module is described in the
+  `igraph homepage <http://hal.elte.hu/~nepusz/development/igraph/tutorial/tutorial.html>`_.
+
+.. autoclass:: cxnet.Network
+   :members: plot, cxlargest_degrees, cxneighbors, cxneighborhood, cxdegdist, cxfind
+
+
+The DegreeDistribution class
+===============================
+
+.. autoclass:: cxnet.DegreeDistribution
+   :members: cumulative_distribution, cumulative_plot, exponent, plot_powerlaw, set_binning, plot, loglog, semilogy, errorbar, summary
+
+

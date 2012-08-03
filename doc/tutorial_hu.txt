@@ -1,0 +1,7 @@
+=====================================================================
+cxnet oktató (tutorial)
+=====================================================================
+
+`In English (Angolul) <tutorial_en.html>`_
+
+Egyelőre lásd az angol változatot és az előző fejezetet.

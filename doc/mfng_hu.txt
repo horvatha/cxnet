@@ -1,0 +1,362 @@
+
+=====================================================================
+mfng - Multifraktálhálózat-generátor
+=====================================================================
+
+Telepítése és frissítése
+================================
+
+Töltsük le a ``cxnet``-et a bazaar-os tárolóból::
+
+  bzr branch http://www.arek.uni-obuda.hu/repo/cxnet
+
+Ezentúl, ha a frissebb változatot szeretnénk letölteni, azt a következő
+paranccsal tehetjük majd meg, ha a most létrehozott (külső) ``cxnet``
+könyvtár bármely alkönyvtárában állunk::
+
+  bzr pull
+
+Használata
+================
+
+Lépjünk bele a ``cxnet/mfng`` könyvtárba::
+
+  cd cxnet/mfng
+
+Elvileg futtathatnánk közvetlenül is az ``mfngrun.py`` fájlt, de azzal
+gondok lehetnek, ha frissíteni szeretnénk a tárolóból a ``cxnet`` csomagot.
+Ezért célravezetőbb egy másolatot készíteni róla és azt futtatni.
+Másoljuk át tehát az ``mfngrun.py`` fájlt ``mrun.py`` névre::
+
+  cp mfngrun.py mrun.py
+
+Szerkesszük át kedvünkre az ``mrun.py`` fájlt. Ehhez a következő szakaszban
+található segítség. Átszerkesztés után futtathatjuk::
+
+  python mrun.py
+
+A futtatás eredményei ilyenkor a projektkönyvtár ``runs.py``,
+``runs.json`` és ``runs.self`` fájljaiba kerülnek. Az első kettő síma
+szövegfájl, bármely szövegszerkesztővel megtekinthető.
+
+A részletek ilyenkor a képernyőre kerülnek.
+A részletes adatok minden egyes lépésre tartalmazzák a valószínűségeket
+és az osztópontokat, valamint a kiszámított energiát, és hogy
+elfogadta-e a program az új generáló mértéket.
+
+Ezt a kimenetet UNIX és Linux alatt átirányíthatjuk egy tetszőleges fájlba.
+Például::
+
+ python mrun.py >> project_base/details.txt
+
+Így, dupla kacsacsőrrel (``>>``), az eredeti fájl végéhez illeszti az új
+adatokat, egyszeres kacsacsőrrel (``>``) mindig felülírja.
+
+Az mfngrun.py (mrun.py) fájlban szereplő paraméterek
+======================================================
+
+Az ``mrun.py`` fájlban a Python teljes fegyverzetét felhasználhatjuk. Az
+alábbiakban pár alapvető dolgot írunk le a nyelvvel és konkrétan a
+szimulációval kapcsolatban.
+
+Fontos tudnunk, hogy a Python nyelvben az utasítások csoportosítását
+behúzásokkal végezzük el. Amíg például a for cikluson belül egyforma
+mértékben vannak behúzva a sorok, addig azok a for ciklus magjához
+tartoznak. Mihelyt visszatérünk a for ciklus vonalában, az az utasítás
+már nem lesz ciklusban. A Python programnyelvről magyar nyelven a
+http://www.arek.uni-obuda.hu/cxnet/ oldalról érhető el egy kisfilm, illetve a 
+http://pythontutorial.pergamen.hu/downloads/html/tut/ oldalon érhető el
+oktatóanyag, angolul pedig a http://python.org hivatalos honlapról.
+
+A generator objektum fontosabb paraméterei.
+
++-------------+----------------------------------------------------+
+| Név         | leírás                                             |
++=============+====================================================+
+| T0          | kezdeti hőmérséklet                                |
++-------------+----------------------------------------------------+
+| Tlimit      | eddig az értékig csökken a hőmérséklet             |
++-------------+----------------------------------------------------+
+| steps       | a lépések száma                                    |
++-------------+----------------------------------------------------+
+| K           | az iterációk száma                                 |
++-------------+----------------------------------------------------+
+| m           | a beosztások száma a kezdeti divs-ben              |
++-------------+----------------------------------------------------+
+| n           | a csúcsok száma a generált hálózatokban            |
++-------------+----------------------------------------------------+
+| nps         | a lépésenként generált hálózatok száma             |
++-------------+----------------------------------------------------+
+| npsfactor   | ennyiszer több hálózatot generál E+T energia alatt |
++-------------+----------------------------------------------------+
+| divexponent | az osztópontok áthelyezésénél szereplő kitevő      |
++-------------+----------------------------------------------------+
+
+Egy vagy több paramétert ciklussal is lehet változtatni, és a különböző
+paraméterekkel egy-egy futtatást végrehajtani. A mfngrun.py-ben
+található példából kitalálható a for-ciklus működése.
+
+A ``generator.append_property`` metódussal tetszőleges tulajdonságot
+adhatunk a generátorunkhoz (jelenleg a ``MaxDegree`` és ``AverageDegree`` érhető
+el). Például, ha azt szeretnénk, hogy a cél az legyen, hogy a maximális
+fokszám 50 legyen, akkor az alábbi sor kell::
+
+  generator.append_property(MaxDegree(50))
+
+Ha azt szeretnénk, hogy a cél az átlagos fokszámra 20 legyen, akkor
+pedig ez::
+
+  generator.append_property(AverageDegree(20))
+
+Egyszerre több tulajdonságot is tudunk optimalizálni, például a fenti
+kettő egymás után is végrehajtható.
+A nem kívánt törlése helyett érdemes lehet inkább megjegyzésbe rakni,
+azaz ``#``-et rakni elé.
+
+..
+        Tartós futtatás távoli szerveren
+        ===================================
+
+        Ha egy szerveren futtatjuk, és nem szeretnénk bejelentkezve maradni,
+        akkor a nohup utasítással indíthatjuk. Ennek két változatát mutatjuk be.
+        Az első esetben közvetlenül hívom meg a nohup-ot, a másodikban egy
+        futtatható fájllal (shell-szkripttel) egyszerűbben csináljuk ugyanezt.
+        Az nohup-pal követlenül így csinálhatjuk::
+
+          nohup ./mrun.py avgdeg >> runs/avgdeg_details.txt 2>> runs/avgdeg_err.txt < /dev/null &
+
+        Ekkor az eredetileg képernyőre kerülő adatok a ``avgdeg_details.txt``
+        fájlba kerülnek. A generálás végeredménye továbbra is a ``runs.py``
+        fájlba kerül. Ezt érjük el akkor is, ha az ``mfngnohup.sh`` szkriptet
+        hívjuk meg a következőképpen::
+
+          ./mfngnohup.sh avgdeg
+
+        A részleteredmények
+        ========================
+        
+        A futtatás egyes dupla lépései két lépést tartalmaznak. Elsőben a
+        valószínűségeket változtatjuk, a másodikban az osztópontok helyeit.
+        A részleteket alapból a képernyőn látjuk, de az mfngnohup.sh külön
+        fájlba irányítja át.
+
+Az eredményfájl
+================
+
+Az eredményfájl tartalmazza többek között:
+
+- a futtatás fontosabb paramétereit
+- a kapott divs és probs értékeket, valamint
+- a futás időtartamát.
+
+Tartalmazza azt is, hogy az egyes lépésekben mikor utasította
+el (``.`` azaz pont) illetve mikor fogadta el (``A``, accept) az új generáló
+mértéket. Azt, amikor úgy fogadta el az új mértéket, hogy az új
+mértékhez tartozó energia nagyobb lett, (kicsi) ``a`` jelöli. 
+
+Az eredmények kiértékelése 
+===========================
+
+Az ``analyzer`` nevű fejlesztés alatt álló modullal egyszerűen
+megtudhatjuk a kapott generáló mérték pár fontos tulajdonságát. A
+továbbiakban egy mintát mutatunk, hogyan használhatjuk ``ipython``
+parancsértelmezővel. Az alábbiaknál feltételezzük, hogy az ipythont a
+``-pylab`` opcióval indítottuk így::
+
+    ipython -pylab
+
+(A hagyományos python-parancssor nem képes több grafikont egy grafikonra
+rajzolni, a továbbiak közül nem minden fog vele működni.)
+Az ``In [x]`` és ``Out [x]`` kezdetű sorokban a beírt parancsok, illetve
+a visszatérési értékeik találhatóak. ::
+
+    In [1]: import analyzer
+    I have found an rc file: /home/ha/.cxnetrc.py.
+    The graph_module was set in the rc file to "igraph".
+    I will use igraph. (It have been imported.)
+
+Tájékoztat minket arról, hogy az ``igraph``-ot vagy a ``networkx``-et fogja-e
+használni. Az ``mfng``-hez az igraph szükséges.
+
+::
+
+    In [2]: r=analyzer.Runs("runs")  # Uses the runs.py file.
+
+Alapból a ``runs.py`` fájlba menti az adatokat, ilyenkor a ``"runs"`` paraméter
+el is hagyható. Előfordulhat viszont, hogy egy másik gépről akarjuk
+áthozni a futási eredményeinek (mert esetleg ott esetleg nincs telepítve a
+kiértékeléshez szükséges matplotlib könyvtár). Ilyenkor általában nem
+szeretnénk felülírni a helyi ``runs.py`` fájlt, ezért más nevet adhatunk a
+fájlnak. Ha ``otherruns.py`` néven másoljuk be a ``cxnet/mfng`` könyvtárba
+(a ``.py`` kiterjesztés fontos), akkor paraméterként az ``"otherruns"``
+sztringet adjuk meg.
+
+::
+
+    In [3]: r.set_labels("3500_001")
+    Out[3]: ['3500_001']
+
+Ha például egy 3500 csúcsponttal végeztem szimulációt, akkor az első
+futtatás címkéje '3500_001' lesz, a másodiké '3500_002' és így tovább.
+Ezt a címkét kell beírni argumentumként. Meg lehet adni címkék listáját
+is. Ilyen esetben olyan vizsgálatoknál, ahol értelme van, mindegyik
+futáson végigmegy az analízis, más esetekben csak az első címkével
+foglalkozik. (Pythonban a sztringek megadásánál az egyszeres és dupla
+idézőjel (``'`` illetve ``"``) között nincs különbség. Listák megadása
+szögletes zárójelben, vesszővel elválasztva történik.
+Pl. ``['3500_001', '3500_002']``)
+
+Amennyiben a set_labelsnek nem adunk meg paramétert, azaz
+``r.set_labels()`` formában hívjuk meg, akkor az fájlban szereplő összes
+címkét berakja a listába.
+
+Pár alaptulajdonság meghatározása sok hálózat generálásából
+------------------------------------------------------------
+
+::
+
+    In [4]: r.properties(n=50)
+    ====================
+    label = 3500_001
+    ====================
+
+    number of generated networks = 50
+    divs = [0.90256203480899999, 1.0],
+    probs=[[ 0.15533352  0.31063345]
+     [ 0.31063345  0.22339959]]
+       avg max deg = 105.14+-9.68485036181, avg average deg=21.5726628571+-0.301747377812
+
+Itt a generáló mértékből n=50 darab hálózatot állítottunk elő, és abból
+vizsgáltuk a kapott hálózatok jellemzőit.
+
+Fokszámeloszlás meghatározása, egyszerűbb változat
+----------------------------------------------------
+
+Miután ``r.set_labels`` függvénnyel beállítottuk a vizsgálni kívánt futásokat,
+kirajzoltathatjuk a fokszámeloszlást loglog skálán a következő sorral::
+
+    In [14]: r.loglog()
+
+Az ábra címét és egyéb dolgokat ugyanúgy megváltoztathatjuk, mint a
+`Fokszámeloszlás meghatározása, rugalmasabb de hosszadalmasabb változat`_ fejezetben látható.
+
+
+Az energia és az osztópontok változása a futás során
+------------------------------------------------------
+
+Az energia változását a futás során a
+:obj:`mfng.analyzer.Runs.plot_energy_list` függvénnyel rajzoltathatjuk
+fel::
+
+    In [3]: r.set_labels(["3500_001", "3500_002"])
+    ["3500_001", "3500_002"]
+    In [4]: r.plot_energy_list()
+
+Ekkor az összes beállított címkére ábrázolni fogja egy ábrán az
+energiaváltozást.
+
+Az osztópontok változását :obj:`mfng.analyzer.Runs.plot_divs_list`
+függvénnyel ábrázolhatjuk, de ez csak a legelső címkére fogja
+kirajzoltatni::
+
+    In [5]: r.plot_divs_list()
+
+
+Fokszámeloszlás meghatározása, rugalmasabb de hosszadalmasabb változat
+------------------------------------------------------------------------
+::
+
+    In [5]: dd=r.degdist()
+
+Ez a metódus egy :class:`cxnet.DegreeDistribution` osztályból származó
+objektummal tér vissza, amely leírása a ``cxnet`` modul leírásánál szerepel.
+Az alábbiak megértéséhez azt érdemes átnézni.
+
+::
+
+    In [6]: dd.set_binning("all")
+
+    In [7]: dd.loglog()
+    Out[7]: [<matplotlib.lines.Line2D object at 0xf8ac3ac>]
+
+A továbbiakban összehasonlításként a kiinduló generáló mértékből is
+készíthetünk fokszámeloszlást, hogy lássuk, mi változott. Ha az ipythont
+a ``-pylab`` opcióval indítottuk, akkor ugyanarra az ábrára rá tudjuk
+helyezni ezt az eloszlást is::
+
+    In [8]: ddi=r.degdist(initial=True) # The distribution of random network (original prob. measure)
+
+    In [9]: ddi.set_binning("all")
+
+    In [10]: ddi.loglog()
+    Out[10]: [<matplotlib.lines.Line2D object at 0xfe4afac>]
+
+A ``matplotlib`` csomag, illetve annak része a ``pylab`` modul lehetőséget ad
+arra, hogy a grafikont tovább módosítsuk. Ezek leírását a ``matplotlib``
+oldalán megtalálhatjuk.  Beállíthatjuk például kedvünk szerint az ábra
+címét, az egyes függvényekhez tartozó magyarázatot, és végül
+elmenthetjük egy fájlba.  Érdemes vektorgrafikus formátumot választani:
+a ``pdf`` a ``pdflatex``-hez, az ``eps`` a ``latex``-hez lehet hasznos, a pixelgrafikus
+``png`` pedig weboldalhoz. Fontos ábrákat érdemes lehet rögtön mindháromba
+menteni::
+
+    In [11]: title("""m=2, K=3, n=3500, maxdeg=85, avgdeg=20""")
+    Out[11]: <matplotlib.text.Text object at 0xf8a63ac>
+
+    In [12]: legend(("result", "random"),loc="upper left")
+    Out[12]: <matplotlib.legend.Legend object at 0xfcb5c0c>
+
+    In [13]: savefig("3500_001degdist.pdf") # pdf helyett lehet pl. png és eps is
+
+Ez utóbbi az alábbihoz hasonló ábrát ad eredményül.
+
+.. figure:: mfng/3500_001degdist.png
+    :scale: 70%
+
+..
+ Az eredmények kiértékelése „kézzel”
+ ==========================================
+ 
+ A továbbiakban azt tárgyaljuk, hogy mit csinálhatunk, 
+ ha olyan dolgokat szeretnénk megtudni a kapott eredményről, amelyre az
+ ``analyzer`` modul nincs felkészítve.
+ 
+ A kapott valószínűségi mértéket beolvashatjuk a Python
+ parancsértelmezőjébe, és tovább elemezhetjük. Az eredményfájlból
+ másoljuk ki a divs és probs paramétereket, majd hozzuk létre a
+ valószínűségi mátrixot, iteráljuk K-szor, és hozzunk létre az iterált
+ valószínűségi mértékből (angolul ezt úgy hívják: link probability
+ measure) ``n`` csúcsú hálózatot. ``K`` és ``n`` értéke megvan az
+ eredményfájlban::
+ 
+   divs = ...
+   probs = ...
+   K = ...
+   n = ...
+   import mfng
+   pm = mfng.ProbMeasure(divs, probs)
+   lpm = pm.iterate(K)
+   nw = lpm.generate(n)
+ 
+ Ezt a hálózatot már vizsgálhatjuk az ``igraph``-fal és/vagy a ``cxnet``-tel.
+ Például kirajzoltathatjuk a fokszámeloszlását::
+ 
+   import cxnet
+   dd = cxnet.DegreeDistribution(nw)
+   dd.set_binning("all")  # nagyobb hálózatoknál all helyett log lehet
+   dd.loglog()
+ 
+ A fokszámeloszlás vizsgálatáról bővebben a cxnet leírásában olvashatunk.
+ 
+ Ha a tulajdonságoknak nagyobb statisztikai ingadozása van, a hálózat
+ létrehozását és vizsgálatát ciklusban érdemes végezni. Az alábbi
+ példába például 20 előállított hálózatra átlagolja a maximális
+ fokszámot. Az elején a 0.0, vagy más hasonló trükk fontos, különben az
+ ``avgmaxdeg`` egész lesz, és egész-osztást fog végezni az utolsó sorban a ``/=`` nél. ::
+ 
+   avgmaxdeg = 0.0
+   for i in range(20):
+       nw = lpm.generate(n)
+       avgmaxdeg += max(nw.degree())
+   avgmaxdeg /= 20
+ 

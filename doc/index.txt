@@ -1,0 +1,40 @@
+.. cxnet documentation master file, created by
+   sphinx-quickstart on Tue Aug 17 09:20:37 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to cxnet's documentation!
+=================================
+
+|hungarian| Magyar dokumentáció a végén / Includes Hungarian documentation.
+
+.. |hungarian| image:: img/Flag_of_Hungary_small.png
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   install_en
+   tutorial_en
+   mfng_en
+   network_evolution
+   install_hu
+   tutorial_hu
+   mfng_hu
+
+Library reference:
+
+.. toctree::
+   :maxdepth: 2
+
+   cxnet_ref
+   mfng_ref
+   mfng_analyzer_ref
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`search`
+
