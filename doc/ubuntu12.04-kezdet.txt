@@ -1,0 +1,137 @@
+===================================================================
+Linux telepítése és beállítása az Összetett hálózatok tantárgyhoz
+===================================================================
+
+Telepítés
+===========
+
+A legtöbb általunk használt program fut Windows alatt is, de nem tudok/fogok
+sokat segíteni a telepítésükben.
+
+Az Ubuntu 12.04-es verzióját fogjuk használni, amit nagyon-nagyon ajánlott
+otthon is telepíteni. A régebbi verziók alatt nehezebb az igraph0.6 telepítése.
+Lehet telepíteni külön partícióra, így a leggyorsabb.  Ilyenkor telepítéskor
+felismeri, hogy van telepítve Windows a gépen, és az indítómenüben (grub) ki
+lehet választani, melyik induljon. Ha valaki nem akar külön partíciót
+létrehozni, akkor lehet virtuális gépként Vitrualbox vagy VMware alá
+telepíteni, de a Wubi is remek lehetőség. A Wubi esetén úgy települ az Ubuntu,
+mint egy Windowsos program, és úgy is lehet eltávolítani. A Windows
+indítómenüjében lehet kiválasztani melyik induljon. Természetesen
+virtuális gépként és Wubiként lassabban fut, mintha saját partíciója
+lenne.
+
+Számunkra elegendő 5 GB a Linuxnak, de érdemesebb legalább 8 -- 10 GB-ot
+rászánni, hátha más dolgokat is telepítenének később. (Például, ha a
+Linux alkalmazása szabadon választható tárgyat felveszik majd.)
+
+A http://ubuntu.hu/letoltes/ubuntu oldalról letölthető telepítő CD-k. A Desktop
+változatot érdemes leszedni.  LiveCD-ként is használhatóak: telepítés előtt ki
+lehet próbálni, hogy mire számíthatunk. Ehhez hagyni kell a gépet, hogy a
+telepítő CD-ről boot-oljon.  Így ki lehet azt is próbálni, milyen hardvereket
+ismer fel.
+
+Számunkra az Ubuntu változatai teljesen egyenértékűek, tehát a
+Kubuntu vagy gyengébb gépekre az Xubuntu, Lubuntu is megfelelő.
+
+
+Vim és pár hasznos apróság
+============================================
+
+Pár hasznos kis program telepítése. A Vimet fogjuk használni programírásra,
+szövegszerkesztésre.  Majd meglájuk, hogy sokszor milyen hasznos lesz. ::
+
+    sudo apt-get install vim mc terminator
+
+Ha van idejük gyakorolni a Vim-et, akkor csak ennyit kell beírni a
+parancssorba.  ::
+
+    vimtutor
+
+Nagyon ajánlott egyszer-kétszer végigcsinálni. A Vim nagyon jó
+szövegszerkesztő, de tanulni kell ahhoz, hogy kényelmesen használható legyen. A
+vimtutorból még talán nem fog látszani milyen jó, de félév közben remélem
+meggyőződnek róla.
+
+De azért pihenjenek is!
+
+igraph és cxnet
+=============================
+
+Pár hasznos program telepítése Pythonhoz. Az ipython egy továbbfejlesztett
+python parancssor (shell). A matplotlibbel együtt lehetővé teszi, hogy
+interaktív módon ábrázoljuk függvényeket. ::
+
+    sudo apt-get install ipython python-matplotlib 
+
+Az igraph0.6 telepítése.
+Az igraph egy nagytudású gráf/hálózat elemző program. ::
+
+    sudo add-apt-repository ppa:igraph
+    sudo apt-get update
+    sudo apt-get install python-igraph
+
+A git verziókezelő rendszer telepítése. Ezt gyakran fogjuk használni. ::
+
+    sudo apt-get install git gitk
+
+A cxnet telepítése. A cxnet az igraphra és a matplotlibre épülő programcsomag. ::
+
+    sudo apt-get install python-apt python-setuptools
+    git clone http://github.com/horvatha/cxnet
+    cd cxnet
+    sudo python setup.py develop
+
+Linux tároló
+================
+
+Ha klónozzuk a linux tárolót, akkor a Linux parancssorában (bash)
+megjelenik a git tároló állapota (ága). ::
+
+    git clone http://github.com/horvatha/linux
+    vim .bashrc
+
+A Vimben az alsó sorba megyünk. Ehhez elég nagy G-t nyomni. i gombbal beszúró
+üzemmódba váltunk (o gomb még jobb), és írjuk be a következőt az utolsó
+sor után::
+
+    source ~/linux/bashrc
+
+Utána mentéssel együtt kiléphetünk a :wq (write + quit) paranccsal.
+
+Ha új terminált nyitunk, és belépünk a linux könyvtárba, akkor mutatja,
+hogy a master ágon (branch) vagyunk::
+
+    cd linux
+
+Mostantól bármikor új shellt indítunk (az új terminál nyitásakor ezt
+tettük), a fenti viselkedés érvényesül.
+
+Ez a művelet elérhetővé tesz egy halom rövidített utasításnevet
+(alias-t) és pár magyar nyelvű leírást a linux könyvtárban.
+Hogy pontosan milyen utasítások érhetőek el, megnézhetjük a bashrc
+fájlban. ::
+
+    vim ~/linux/bashrc
+
+Például az lt utasítás ugyanúgy viselkedik, mintha azt írnánk, hogy
+"ls -ltr" (idézőjelek nélkül). Azaz részletes listát ad a fájlokról
+(-l), úgy hogy idő szerint (-t) fordított sorrendbe rendez (-r). Azaz a
+legutóbb szerkesztett fájlok lesznek a legvégén. A "cx fájlnév" utasítás
+futtatási jogot ad mindenkinek a fájlra.
+
+Az mfng telepítése
+===================
+
+A multifraktál hálózatgeneráló (MFNG) telepítése hasonlít a cxnet-éhez,
+csupán egy C++ fájlt kell még lefordítani::
+
+    git clone http://github.com/horvatha/mfng
+    cd mfng
+    sudo python setup.py develop
+    cd scripts
+    make iterate
+
+Az mfng használatához az iterate fájlnak benne kell lennie az útvonalban
+($PATH változó). Ez azonban teljesül, ha a linux könyvtárat felraktuk,
+és a .basrc-be beraktuk a fent említett sort.
+

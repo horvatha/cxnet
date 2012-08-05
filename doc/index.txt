@@ -22,6 +22,7 @@ Contents:
    install_hu
    tutorial_hu
    mfng_hu
+   ubuntu12.04-kezdet
 
 Library reference:
 
