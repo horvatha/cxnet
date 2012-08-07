@@ -553,7 +553,7 @@ def debnetwork():
         debnet.vs[idgen[extra]]["type"] = 1
     debnet.type = "igraph"
     debnet["name"] = "software package dependency network of Linux"
-    if cnd.revision:
+    if cdn.revision:
         debnet["revision"] = cdn.revision
     debnet["hostname"] = platform.node()
     debnet["URL"] = "http://django.arek.uni-obuda.hu/cxnet"
