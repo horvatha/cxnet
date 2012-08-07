@@ -179,7 +179,9 @@ class Network(igraph.Graph):
                 if "architecture" in self.vs.attributes():
                     vertex["architecture"] = None
         if "revision" in self.attributes():
-            self["revision"] = int(self["revision"])
+            revision = self["revision"]
+            if isinstance(revision, float) and not math.isnan(revision):
+                self["revision"] = int(revision)
 
         del self.vs["id"]
         integer_attributes = (
@@ -551,7 +553,8 @@ def debnetwork():
         debnet.vs[idgen[extra]]["type"] = 1
     debnet.type = "igraph"
     debnet["name"] = "software package dependency network of Linux"
-    debnet["revision"] = cdn.revision
+    if cnd.revision:
+        debnet["revision"] = cdn.revision
     debnet["hostname"] = platform.node()
     debnet["URL"] = "http://django.arek.uni-obuda.hu/cxnet"
     debnet["sources_list"] = cdn.sources_list
