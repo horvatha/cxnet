@@ -140,7 +140,7 @@ class CommonDebNetwork:
         self.vertices = dict((pkg.name, self.package_tuple(pkg)) for pkg in cache)
         self.edges = edges = depends_edges | provided_edges
         self.sources_list = sources_list()
-        self.revision = get_revision()[0]
+        self.revision = get_revision()
 
     def package_tuple(self, pkg):
         candidate = pkg.candidate
