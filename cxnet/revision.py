@@ -5,6 +5,16 @@ from __future__ import print_function
 import os
 import cxnet
 import subprocess
+import contextlib
+
+@contextlib.contextmanager
+def working_directory(path):
+    cwd = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(cwd)
 
 def cxnet_path():
     file_ = cxnet.__file__
@@ -29,8 +39,8 @@ def get_revision(path=None):
     return ""
 
 def get_git_revision(path):
-    os.chdir(path)
-    return command("git rev-parse HEAD").strip()
+    with working_directory(path):
+        return command("git rev-parse HEAD").strip()
 
 def command(x):
     return str(subprocess.Popen(x.split(' '), stdout=subprocess.PIPE).communicate()[0])
