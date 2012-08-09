@@ -27,9 +27,9 @@ class DebNetworkFunction(unittest.TestCase):
             vertex = self.net.vs.select(name=name)[0]
             self.assertEqual(vertex["type"], _type)
             if _type == 0:
-                self.assertEqual(vertex["color"], "red")
+                self.assertEqual(vertex["color"], "yellow")
             else:
-                self.assertEqual(vertex["color"], "blue")
+                self.assertEqual(vertex["color"], "lightblue")
 
 path = os.path.split(__file__)[0]
 
@@ -55,13 +55,13 @@ class DebNetworkFromGML(unittest.TestCase):
             vertex = self.net.vs.select(name=name)[0]
             self.assertEqual(vertex["type"], _type)
             if _type == 0:
-                self.assertEqual(vertex["color"], "red")
+                self.assertEqual(vertex["color"], "yellow")
                 for attr in ("filesize", ):
                     self.assertTrue(isinstance(vertex["filesize"], int))
                 for attr in ("priority", "section", "summary", "version"):
                     self.assertTrue(isinstance(vertex[attr], str))
             else:
-                self.assertEqual(vertex["color"], "blue")
+                self.assertEqual(vertex["color"], "lightblue")
                 for attr in ("priority", "filesize", "section", "summary", "version"):
                     self.assertEqual(vertex[attr], None)
 
