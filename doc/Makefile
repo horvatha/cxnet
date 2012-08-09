@@ -94,3 +94,6 @@ doc_nsre:
 
 doc_fel:
 	scp -P 122 -r doc horvatha@django.arek.uni-obuda.hu:cxnet/web
+
+pdf_fel:
+	scp -P 122 -r _build/latex/cxnet.pdf horvatha@django.arek.uni-obuda.hu:cxnet/web/doc
