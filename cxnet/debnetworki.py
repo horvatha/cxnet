@@ -195,7 +195,7 @@ class Network(igraph.Graph):
                     if isinstance(value, float) and not math.isinf(value) and not math.isnan(value):
                         item[attr] = int(value)
                     elif value is not None and (math.isinf(value) or math.isnan(value)):
-                        print "The value of the {0} attribute is {1}.".format(attr, value)
+                        print "The value of the {0} attribute is {1} ({2}).".format(attr, value, item["name"])
         self.normalized = True
 
     def cxcolorize(self, vcolors=("yellow", "lightblue"), ecolors=("orange", "red", "blue")):
@@ -219,11 +219,15 @@ class Network(igraph.Graph):
             pkg_name: string or integer
                 The name of the package or the index of the vertex.
             plot: boolean or string, default False
-                - If it is one  of "pdf", "png" or "svg", the output will be a
-                  file like neighbors_of_pkg_name.pdf.
+                - If it is one  of "pdf", "png", "svg" or "ps", the output will
+                  be a file like neighbors_of_pkg_name.pdf. With igraph 0.6.1+
+                  you can use "eps" as well.
                 - If other string, the output will be a file named in the string.
                 - If True, plot to the screen.
                 - If False, do not plot.
+            return_network: boolean
+                If True, returns with a cxnet.Network instance instead of
+                VertexSequence
 
         Returns:
             Vertex sequence of the neighborhood.
@@ -294,7 +298,7 @@ class Network(igraph.Graph):
                 kwargs["margin"] = (70, max(0.6*kwargs["vertex_size"], 5)) * 2
             if kwargs.get("edge_arrow_width") is None:
                 kwargs["edge_arrow_width"] = .5
-            if plot in "pdf png svg".split():
+            if plot in "pdf png svg ps eps".split():
                 filename = "neighbors_of_%s.%s" % (pkg_name, plot)
                 subnetwork.plot(filename, layout=subnetwork.vs["coord"], **kwargs)
             elif isinstance(plot, str):
@@ -302,7 +306,7 @@ class Network(igraph.Graph):
             else:
                 subnetwork.plot(layout=subnetwork.vs["coord"], **kwargs)
 
-        return vs
+        return self.subgraph(vs) if kwargs.get("return_network") else vs
 
     def cxdegdist(self, **kwargs):
         """Returns with a DegreDistribution class analyzing and plotting distribution.
