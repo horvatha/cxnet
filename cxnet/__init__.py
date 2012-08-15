@@ -37,7 +37,7 @@ if graph_module == "igraph":
         from igraph import summary
         from igraph import Graph
         from igraph import WEAK, STRONG # for net.components
-        from igraph import IN, OUT      # for net.degree
+        from igraph import OUT, IN, ALL # for net.degree
 
 elif graph_module == "networkx":
     try:

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """Unittest for cxnet gml import."""
 
 import cxnet

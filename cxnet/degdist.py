@@ -20,7 +20,11 @@ except (ImportError, RuntimeError):
 else:
     pylab_module = True
 
+import numpy
+
 import sys
+import tools
+from tools import OUT, IN, ALL
 
 split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
 
@@ -70,6 +74,7 @@ class DegreeDistribution:
     - `cumulative_plot`: Plots the cumulative distribution.
     """
 
+    @tools.direction
     def __init__(self, network_or_degree_list, verbose=True, **kwargs):
         """
         """
@@ -79,7 +84,7 @@ class DegreeDistribution:
         self.kwargs = kwargs
         self.gamma = None # The absolute value of exponent
 
-        self.direction = kwargs.get("direction")
+        self.direction = kwargs.pop("direction")
 
         # Argument can be a network or a degree list.
         # We create degree list self.deg
@@ -91,42 +96,37 @@ class DegreeDistribution:
         else:
             network = network_or_degree_list
             # We can use NetworkX or IGraph modules.
-            use_networkx =  ("adj" in dir(network))
-            if self.direction is None:
-                self.deg = network.degree()
-            elif self.direction == "in":
-                if use_networkx:
-                    self.deg = network.in_degree()
-                else:
-                    self.deg = network.indegree()
-            elif self.direction == "out":
-                if use_networkx:
-                    self.deg = network.out_degree()
-                else:
-                    self.deg = network.outdegree()
+            if "adj" in dir(network): # NetworkX
+                self.deg = {
+                        IN: network.in_degree(),
+                        OUT: network.out_degree(),
+                        ALL: network.degree()
+                    }[self.direction]
+            else:
+                self.deg = {
+                        IN: network.indegree(),
+                        OUT: network.outdegree(),
+                        ALL: network.degree()
+                    }[self.direction]
 
         if isinstance(self.deg, dict):
             self.deg = self.deg.values()
 
-        if self.direction is None:
-            self.index = ""
-            self.degree_type = "plain degree"
-        elif self.direction == "in":
-            self.index = "_in"
-            self.degree_type = "in-degree"
-        elif self.direction == "out":
-            self.index = "_out"
-            self.degree_type = "out-degree"
+        self.index, self.texindex, self.degree_type = {
+                ALL: ("",     "",       "plain degree"),
+                IN:  ("_in",  "_{in}",  "in-degree"),
+                OUT: ("_out", "_{out}", "out-degree"),
+            }[self.direction]
 
         self.max_deg = max(self.deg)
 
-        self.dd=[(i, j) for i, j in enumerate(pylab.bincount(self.deg))]
+        self.dd=[(i, j) for i, j in enumerate(numpy.bincount(self.deg))]
         self.n_0 = self.dd[0][1]
         self.dd=[(i, j) for i, j in self.dd if i > 0 and j > 0]
         self.number_of_vertices = len(self.deg)
         self.dd=[(i, j/self.number_of_vertices) for i, j in self.dd]
 
-        self.binning = kwargs.get("binning")
+        self.binning = kwargs.pop("binning", None)
         if self.binning is not None:
             self.bin_smearing()
 
@@ -318,11 +318,7 @@ The result of the first two examples are the same.
         x,y = split(dd)
         x=pylab.array(x)
         if "label" not in kwargs:
-            if self.direction in ["in", "out"]:
-                index = "_{%s}" % self.direction
-            else:
-                index = ""
-            kwargs["label"] = "$p(k%s)$" % index
+            kwargs["label"] = "$p(k%s)$" % self.texindex
         p = plot(x,y,".", **kwargs)
         pylab.xlabel("k%s" % self.index)
         pylab.ylabel("p(k%s)" % self.index)
@@ -358,11 +354,7 @@ The result of the first two examples are the same.
         dd = self.dd_smeared
 
         if "label" not in kwargs:
-            if self.direction in ["in", "out"]:
-                index = "_{%s}" % self.direction
-            else:
-                index = ""
-            kwargs["label"] = "$p(k%s)$" % index
+            kwargs["label"] = "$p(k%s)$" % self.texindex
         if "marker" not in kwargs:
             kwargs["marker"] = ""
 
@@ -467,7 +459,7 @@ class PowerLawDistribution:
         self.gamma = gamma
         self.xmin = xmin
         self.error = error
-        x = pylab.exp(-pylab.log(error)/gamma)
+        x = numpy.exp(-numpy.log(error)/gamma)
         xmax = int(x+1)
         zeta = 0.0
         cumdist = []
