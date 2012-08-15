@@ -5,16 +5,7 @@ from __future__ import print_function
 import os
 import cxnet
 import subprocess
-import contextlib
-
-@contextlib.contextmanager
-def working_directory(path):
-    cwd = os.getcwd()
-    try:
-        os.chdir(path)
-        yield
-    finally:
-        os.chdir(cwd)
+from tools import working_directory
 
 def cxnet_path():
     file_ = cxnet.__file__
