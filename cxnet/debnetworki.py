@@ -26,6 +26,8 @@ try:
 except ImportError:
     linux_distribution = None
 import platform
+import pylab
+import tools
 
 
 class Network(igraph.Graph):
@@ -519,6 +521,34 @@ class Network(igraph.Graph):
 
     def estat(self, attribute=None):
         return self.cxstat_(attribute, object_="edge")
+
+    @tools.direction
+    def cxclustering_degree_plot(self, min_degree=2, **kwargs):
+        """Plots the clustering coefficient as a function of degree.
+
+        Parameters:
+            min_degree: integer >= 2
+                the minimal degree to take account
+            direction: "in", "out" ,"" or None or 1, 2, 3
+                if "in" or "out", it uses indegree and outdegree instead of degree
+                respectively
+
+        """
+        direction = kwargs.pop("direction")
+        degree = {igraph.IN: self.indegree,
+                igraph.OUT: self.outdegree,
+                igraph.ALL: self.degree,
+                }[direction]
+        assert min_degree >= 2, "min_degree must be 2 or greater"
+        x, y = tools.average_values(degree(), self.transitivity_local_undirected())
+        new_kwargs = {"marker": "o", "linestyle": ""}
+        new_kwargs.update(kwargs)
+        plot =  pylab.loglog(x, y, label="average clustering coeff.", **new_kwargs)
+        prefix = {igraph.IN: "in", igraph.OUT: "out"}.get(direction, "")
+        pylab.title("Clustering coefficient as a function of {0}degree".format(prefix))
+        pylab.xlabel("{0}degree".format(prefix))
+        pylab.ylabel("average clustering coefficient")
+        return plot
 
 def debnetwork():
     """Creates the network of deb packages in Linux distributions using deb packages.
