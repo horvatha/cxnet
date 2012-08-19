@@ -25,6 +25,7 @@ import numpy
 import sys
 import tools
 from tools import OUT, IN, ALL
+import powerlaw
 
 split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
 
@@ -56,6 +57,8 @@ class DegreeDistribution:
       `direction`: "in", "out", None [default]
          the direction of the connection to count.
          If None, plain degree will be used.
+      `binning`: None, "all", "ondemand", "log" or "logarithmic"
+         See at set_binning method.
 
     some variables:
 
@@ -129,6 +132,7 @@ class DegreeDistribution:
         self.binning = kwargs.pop("binning", None)
         if self.binning is not None:
             self.bin_smearing()
+        self.labelfontsize=15
 
     def cumulative_distribution(self):
         """Return the cumulative degree distribution
@@ -143,17 +147,6 @@ class DegreeDistribution:
             cum_dd.append((k, sum_p))
         return list(reversed(cum_dd))
 
-    def degdistlist(self):
-        """Returns with the list of probability of each degrees."""
-        """It was written for a Property I do not have written.
-        Perhaps it should be deleted. But perhaps it is good for
-        testing."""#TODO
-        degdistlist = [0] * (self.max_deg+1)
-        degdistlist[0] = self.n_0 / self.number_of_vertices
-        for k, p in self.dd:
-            degdistlist[k] = p
-        return degdistlist
-
     def cumulative_plot(self, with_powerlaw=False, **kwargs):
         """Plot the cumulative distribution.
 
@@ -163,13 +156,21 @@ class DegreeDistribution:
             """
         x,y = split(self.cumulative_distribution())
         if "label" not in kwargs:
-            kwargs["label"] = "cumulative dist."
+            kwargs["label"] = "$P(k%s)$" % self.texindex
         p = pylab.loglog(x,y, **kwargs)
-        pylab.xlabel("k%s" % self.index)
-        pylab.ylabel("P(k%s)" % self.index)
+        pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
+        pylab.ylabel("$P(k%s)$" % self.texindex, fontsize=self.labelfontsize)
         pylab.title(u"Cumulative %s distribution" % self.degree_type)
         if with_powerlaw:
-            self.plot_powerlaw(gamma="cumulative")
+            kwargs.pop("marker", None)
+            kwargs.pop("label", None)
+            if self.gamma is None:
+                self.exponent()
+            powerlaw.plot(exponent=-self.gamma + 1,
+                    xmax=self.max_deg, xmin=self.k_min,
+                    num=2,
+                    **kwargs
+                    )
         return p
 
     def exponent(self, k_min=5.5):
@@ -253,34 +254,22 @@ class DegreeDistribution:
         pylab.savefig(file)
         return p
 
-    def plot_powerlaw(self, gamma=None, **kwargs):
-        """Plot a power law function with exponent gamma or self.gamma.
+    def plot_powerlaw(self, **kwargs):
+        """Plot a power-law function with exponent self.gamma.
 
         Parameters:
-            gamma: float, "cumulative" or None
-                if float, -gamma will be the exponent,
-                if "cumulative" then -self.gamma+1
-                else -self.gamma.
             kwargs:
                 Keyword argumentums are forwarded to the plot function.
 
         Return with the plot.
         """
 
-        delta = ""
-        if not self.gamma and not isinstance(gamma, (int,float)):
+        if self.gamma is None:
             self.exponent()
-        if gamma is None:
-            gamma = self.gamma
-        elif gamma == "cumulative":
-            gamma = self.gamma - 1
-            delta = "+1"
-        assert isinstance(gamma, (int, float))
-        if "label" not in kwargs:
-            kwargs["label"] = "$k^{{-\gamma{0}}}$".format(delta)
-        k = pylab.linspace(self.k_min, self.max_deg, 2)
-        p = pylab.plot(k, k**(-gamma), "--", **kwargs)
-        return p
+        return powerlaw.plot(exponent=-self.gamma,
+                xmax=self.max_deg, xmin=self.k_min,
+                **kwargs
+                )
 
     binning_warning = """You need to run dd.set_binning(b) first.
 Examples:
@@ -293,7 +282,7 @@ The result of the first two examples are the same.
 """
 
 
-    def plot(self, plot=None, **kwargs):
+    def plot(self, plot=None, with_powerlaw=False, **kwargs):
         """Plot the bin smeared degree distribution.
 
         """
@@ -318,12 +307,17 @@ The result of the first two examples are the same.
         x,y = split(dd)
         x=pylab.array(x)
         if "label" not in kwargs:
-            kwargs["label"] = "$p(k%s)$" % self.texindex
+            kwargs["label"] = "$p(k{0})$, {1} binned".format(
+                                        self.texindex, self.binning)
         p = plot(x,y,".", **kwargs)
-        pylab.xlabel("k%s" % self.index)
-        pylab.ylabel("p(k%s)" % self.index)
+        pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
+        pylab.ylabel("$p(k%s)$" % self.texindex, fontsize=self.labelfontsize)
         title = u"%s distribution" % self.degree_type
         pylab.title(title.capitalize())
+        if with_powerlaw:
+            kwargs.pop("marker", None)
+            kwargs.pop("label", None)
+            self.plot_powerlaw(**kwargs)
         pylab.show()
         return p
 
@@ -354,7 +348,8 @@ The result of the first two examples are the same.
         dd = self.dd_smeared
 
         if "label" not in kwargs:
-            kwargs["label"] = "$p(k%s)$" % self.texindex
+            kwargs["label"] = "$p(k{0})$, {1} binned".format(
+                                        self.texindex, self.binning)
         if "marker" not in kwargs:
             kwargs["marker"] = ""
 
@@ -447,7 +442,7 @@ class PowerLawDistribution:
     """Return a power-law distribution.
 
     Parameters:
-    - `gamma`: the exponent.
+    - `gamma`: the absolute value of the exponent.
     - `xmin`
     - `error`
 
@@ -497,14 +492,31 @@ def KolmogorovSmirnoff_statistics(dd1, dd2):
             difference = abs(summa1 - summa2)
     return difference
 
-#if False:
 if __name__ == "__main__":
-    sys.path.insert(0, ".")
-    sys.path.insert(0, "..")
-    import networkx
-    g = networkx.barabasi_albert_graph(10000, 4)
+    import igraph
+    g = igraph.Graph.Barabasi(10000, 4)
     dd = DegreeDistribution(g)
-
     dd.summary()
     #dd.summary("info.txt")
     print dd.exponent()
+    dd.cumulative_plot(with_powerlaw=True)
+    pylab.legend()
+    pylab.savefig("tmp_cumulative.png")
+
+    pylab.clf()
+    dd = DegreeDistribution(g)
+    dd.set_binning("all")
+    dd.loglog(marker="x")
+    dd.set_binning("ondemand")
+    dd.loglog(marker="+")
+    dd.set_binning("log")
+    dd.loglog(with_powerlaw=True, marker="d")
+    pylab.legend()
+    pylab.savefig("tmp_degdist.png")
+
+    pylab.clf()
+    dd = DegreeDistribution(g, direction="out")
+    dd.set_binning("log")
+    dd.loglog(with_powerlaw=True, marker="d")
+    pylab.legend()
+    pylab.savefig("tmp_outdegdist.png")

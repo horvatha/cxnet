@@ -28,6 +28,7 @@ except ImportError:
 import platform
 import pylab
 import tools
+import powerlaw
 
 
 class Network(igraph.Graph):
@@ -523,31 +524,57 @@ class Network(igraph.Graph):
         return self.cxstat_(attribute, object_="edge")
 
     @tools.direction
-    def cxclustering_degree_plot(self, min_degree=2, **kwargs):
+    def cxclustering_degree_plot(self, min_degree=2, with_powerlaw=-1, **kwargs):
         """Plots the clustering coefficient as a function of degree.
 
         Parameters:
             min_degree: integer >= 2
                 the minimal degree to take account
-            direction: "in", "out" ,"" or None or 1, 2, 3
+            with_powerlaw: int, float or None
+                if integer or float, it plots a power-law function with this
+                exponent, if None, it does not plot.
+            direction: "in", "out" ,"" or None or cxnet.IN, cxnet.OUT, cxnet.ALL
                 if "in" or "out", it uses indegree and outdegree instead of degree
                 respectively
+            coeff: int, float
+                the coeff parameter of powerlaw.plot
+            powerlaw_marker:
+                marker of the power-law function
+            powerlaw_linestyle:
+                linestyle of the power-law function
 
         """
         direction = kwargs.pop("direction")
+        powerlaw_parameters = dict((param, kwargs.pop(param))
+                    for param
+                    in ["coeff", "powerlaw_marker", "powerlaw_linestyle"]
+                    if param in kwargs
+                )
+        coeff = kwargs.pop("coeff", None)
         degree = {igraph.IN: self.indegree,
                 igraph.OUT: self.outdegree,
                 igraph.ALL: self.degree,
                 }[direction]
+        assert isinstance(min_degree, int), "min_degree must be integer"
         assert min_degree >= 2, "min_degree must be 2 or greater"
         x, y = tools.average_values(degree(), self.transitivity_local_undirected())
         new_kwargs = {"marker": "o", "linestyle": ""}
         new_kwargs.update(kwargs)
-        plot =  pylab.loglog(x, y, label="average clustering coeff.", **new_kwargs)
-        prefix = {igraph.IN: "in", igraph.OUT: "out"}.get(direction, "")
+        kwargs = new_kwargs
+        plot =  pylab.loglog(x, y, label="average clustering coeff.", **kwargs)
+        prefix = {igraph.IN: "in-", igraph.OUT: "out-"}.get(direction, "")
         pylab.title("Clustering coefficient as a function of {0}degree".format(prefix))
         pylab.xlabel("{0}degree".format(prefix))
         pylab.ylabel("average clustering coefficient")
+        if with_powerlaw is not None:
+            assert isinstance(with_powerlaw, (int, float)), "with_powerlaw must be int, float or None"
+            kwargs["marker"] = powerlaw_parameters.pop("powerlaw_marker", "")
+            kwargs["linestyle"] = powerlaw_parameters.pop("powerlaw_linestyle", "--")
+            kwargs.update(powerlaw_parameters)
+            powerlaw.plot(exponent=with_powerlaw,
+                    xmax=max(self.degree()),
+                    **kwargs
+                    )
         return plot
 
 def debnetwork():
