@@ -2,10 +2,10 @@
   _install-index
 
 ===========================================
-Introdution and installation
+Introduction and installation
 ===========================================
 
-|hungarian| `Magyar nyelven (in Hungarian) <install_hu.html>`_
+|hungarian| `Magyar nyelven (in Hungarian) <ubuntu12.04-kezdet.html>`_
 
 .. |hungarian| image:: img/Flag_of_Hungary_small.png
 
@@ -13,15 +13,15 @@ Introduction
 ===============
 
 The cxnet package extends igraph module with some functionality.
-It in intended to usein higher education.
+It in intended to use in higher education.
 Some functionality is available with NetworkX module as well.
 Function plotting needs matplotlib (pylab).
 
-It provides three modules: cxnet, mfng and network_evolution.
+It provides two modules: cxnet and mfng.
 
 Functionalities:
 
-- Creating network from the deb package hierarchy.
+- Creating network from the deb software package hierarchy.
 
 - Investigating and plotting degree distribution.
 
@@ -31,7 +31,11 @@ Functionalities:
 
  * to plot the neighbours of a vertex.
 
-- A tool to create network evolution models.
+Mail to the author
+========================
+
+`Use the email here
+<http://www.arek.uni-obuda.hu/~horvatha/elerhetoseg.html>`_
 
 Requirements
 ==================================================
@@ -45,17 +49,33 @@ To most of the functionality of cxnet you need to have
 `igraph <http://igraph.sourceforge.net>`_ or `NetworkX <http://networkx.lanl.gov/>`_ installed. We prefer igraph.
 The installation of igraph is `detailed on Wikidot <http://igraph.wikidot.com/installing-python-igraph>`_.
 
-Some funcionality needs:
+Some functionality needs:
 
 * `the matplotlib plotting tool (including pylab)
-  <http://matplotlib.sourceforge.net/>`_, if we want to plot functions
+  <http://matplotlib.sourceforge.net/>`_, if you want to plot functions
   like in MATLAB, analyzing the results of the mfng runs,
 * `the ipython interactive Python shell <http://ipython.scipy.org/moin/>`_
-* `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_, if we
-  want to create deb package dependency network
-* `python-pygraphviz <http://pypi.python.org/pypi/pygraphviz>`_, not too
-  important, just if we want plot graphs with graphviz, or in NetworkX
-  with the help of graphviz.
+* `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_, if you
+  want to create deb software package dependency network
+
+cxnet and mfng needs Python version 2.6 or newer but these packages do
+not run with Python 3 yet. Most functionalities work perhaps with Python
+2.5 as well.
+
+..
+        * `python-pygraphviz <http://pypi.python.org/pypi/pygraphviz>`_, not too
+          important, just if you want plot graphs with graphviz, or in NetworkX
+          with the help of graphviz.
+
+Latest igraph installation on Ubuntu 12.04
+==============================================
+
+You just need to write into the shell (you need to log in as a user
+with administrator privilege)::
+
+    sudo add-apt-repository ppa:igraph
+    sudo apt-get update
+    sudo apt-get install python-igraph
 
 Latest igraph installation on Debian
 =====================================
@@ -71,52 +91,92 @@ And follow the instructions at (the Debian Lenny section, build from source):
 
 http://igraph.wikidot.com/installing-python-igraph-on-linux#toc2
 
+
 Installation
 ==================================================
 
-You need to have a bazaar version control system, otherwise you can use
+To use cxnet you do not need mfng, but if you want to analyze the
+results of the mfng generated probability measures, you need cxnet.
+
+This section describes the installation on the recent versions of Debian
+and Ubuntu. On other distributions of Linux perhaps the packages have
+slightly different names. On Windows the installation method is more
+difficult. If you can not figure out how, ask the author for help.
+
+..
+  For Windows you can install the older version (next section) as well.
+
+Step 1.
+You need to have the git version control system, otherwise you can use
 only the older version (next section).
+On Debian and Ubuntu you can get the git and some other useful packages
+with the commands::
 
-We can download the
-``cxnet`` from a bazaar repository::
+  sudo apt-get install git gitk
+  sudo apt-get install ipython python-matplotlib python-apt
 
-  bzr branch http://www.arek.uni-obuda.hu/repo/cxnet
+Step 2.
+You can download the ``cxnet`` and ``mfng`` separately from the github
+repository::
 
-If we have administrator privilege, we can install the cxnet globally
-(we do not need sudo if we are root)::
+  git clone http://github.com/horvatha/cxnet
+  git clone http://github.com/horvatha/mfng
+
+Step 3.
+If you have administrator privilege, you can install the cxnet globally
+(you do not need sudo if you logged in as root)::
 
   cd cxnet
   sudo python setup.py install
-
-If we want to update, we must be in one of the subdirectory of the
-(outer) ``cxnet`` directory we created now, and type::
-
-  bzr pull
+  cd ~/mfng
   sudo python setup.py install
 
+Step 4.
+If you want to update, you must be in one of the subdirectory of the
+(outer) ``cxnet`` or ``mfng`` directory (that you want to update) you
+created now, and type::
 
-Installation of the oldest version
-==================================================
+  git pull
+  sudo python setup.py install
 
-You can use the standard installation method. Download the source
-(.tar.gz) manually from the `Python Package Index <http://pypi.python.org/pypi/cxnet>`_, and install it::
+Instead of the Step 3, you have an alternative method, if you install
+python-setuptools::
 
-  wget http://pypi.python.org/packages/source/c/cxnet/cxnet-0.2.tar.gz
-  tar xzf cxnet-0.2.tar.gz
-  cd cxnet-0.2
-  python setup.py install
+  sudo apt-get install python-setuptools
+  cd cxnet
+  sudo python setup.py develop
+  cd ~/mfng
+  sudo python setup.py develop
 
-On UNIX/Linux platform for the last step you need to have administrator
-privilege, so use su or sudo if you are not root.
-If you have not administrator privileges, you can work in the uncompressed
-directory as well.
-For the network evolution part it is the only working method yet.
+In this case the "git pull" is enough, if you want to update (in Step
+4). This method is better, if you want to develop cxnet or mfng.
 
-If you have pip or easy-install installed, you just need to type::
 
-  pip install cxnet
-  or
-  easy-install cxnet
+..
+  Installation of the oldest version of cxnet
+  ==================================================
+  
+  You can use the standard installation method. Download the source
+  (.tar.gz) manually from the `Python Package Index
+  <http://pypi.python.org/pypi/cxnet>`_, and install it::
+  
+    wget http://pypi.python.org/packages/source/c/cxnet/cxnet-0.2.tar.gz
+    tar xzf cxnet-0.2.tar.gz
+    cd cxnet-0.2
+    python setup.py install
+  
+  On UNIX/Linux platform for the last step you need to have administrator
+  privilege, so use su or sudo if you are not root.
+  If you have not administrator privileges, you can work in the uncompressed
+  directory as well.
+  For the network evolution part it is the only working method yet.
+  
+  If you have pip or easy-install installed, you just need to type::
+  
+    pip install cxnet
+    or
+    easy-install cxnet
+  
+  On UNIX/Linux platform you need to have administrator privilege, so use su or
+  sudo if you are not root.
 
-On UNIX/Linux platform you need to have administrator privilege, so use su or
-sudo if you are not root.

@@ -59,9 +59,11 @@ igraph és cxnet
 
 Pár hasznos program telepítése Pythonhoz. Az ipython egy továbbfejlesztett
 python parancssor (shell). A matplotlibbel együtt lehetővé teszi, hogy
-interaktív módon ábrázoljuk függvényeket. ::
+interaktív módon ábrázoljuk függvényeket. A python-apt teszi lehetővé a
+Linuxos szoftvercsomagok függőségi hálózatának előállítását. ::
 
     sudo apt-get install ipython python-matplotlib 
+    sudo apt-get install python-apt
 
 Az igraph0.6 telepítése.
 Az igraph egy nagytudású gráf/hálózat elemző program. ::
@@ -76,7 +78,7 @@ A git verziókezelő rendszer telepítése. Ezt gyakran fogjuk használni. ::
 
 A cxnet telepítése. A cxnet az igraphra és a matplotlibre épülő programcsomag. ::
 
-    sudo apt-get install python-apt python-setuptools
+    sudo apt-get install python-setuptools
     git clone http://github.com/horvatha/cxnet
     cd cxnet
     sudo python setup.py develop

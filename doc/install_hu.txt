@@ -11,6 +11,10 @@ cxnet -- Összetett hálózatok az oktatásban
 
 `In English (angolul) <install_en.html>`_
 
+A telepítés részleteiben sokminden elavult lehet. Az angol változat
+vagy az Ubuntu telepítése az Összetett hálózatok tantárgyhoz hasznos
+iránymutató lehet.
+
 Előkövetelmények
 ================
 
