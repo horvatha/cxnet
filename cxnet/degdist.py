@@ -336,7 +336,7 @@ The result of the first two examples are the same.
         return self.plot(plot=pylab.semilogy, **kwargs)
 
     def errorbar(self, **kwargs):
-        """Plot the degree distribution with the fits.
+        """Plot the degree distribution with error bars.
 
         """
 
@@ -345,7 +345,6 @@ The result of the first two examples are the same.
         except AttributeError:
             print self.binning_warning
             return
-        dd = self.dd_smeared
 
         if "label" not in kwargs:
             kwargs["label"] = "$p(k{0})$, {1} binned".format(
@@ -362,6 +361,39 @@ The result of the first two examples are the same.
 
         pylab.show()
         return p
+
+    def bar_plot(self, xscale="linear", yscale="linear", **kwargs):
+        """Plot the degree distribution with bars.
+
+        """
+
+        try:
+            dd = self.dd_smeared
+        except AttributeError:
+            print self.binning_warning
+            return
+        dd = self.dd_smeared
+
+        if "label" not in kwargs:
+            kwargs["label"] = "$p(k{0})$, {1} binned".format(
+                                        self.texindex, self.binning)
+        x,height = split(dd)
+        left = self.division_points[:-1]
+        width = [self.division_points[i+1] - self.division_points[i]
+                for i in range(len(self.division_points)-1)]
+        min_height = min(hei for hei in height if hei > 0)
+        p = pylab.bar(left, height, width,
+                bottom=10**int(numpy.log10(min_height/1.02)),
+                **kwargs)
+        pylab.gca().set_yscale(yscale)
+        pylab.gca().set_xscale(xscale)
+
+        pylab.show()
+        return p
+
+    def bar_loglog(self, **kwargs):
+        "As bar_plot, but with logarithmic scales as default."
+        return self.bar_plot(xscale="log", yscale="log", **kwargs)
 
     def summary(self, verbosity=0, file=None):
         """Write informations to screen or file about the distribution.
