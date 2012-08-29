@@ -27,7 +27,8 @@ import tools
 from tools import OUT, IN, ALL
 import powerlaw
 
-split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
+#split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
+split = lambda List: zip(*List)
 
 def logarithmic_binning(dd, l=1, mult=2):
     if not isinstance(dd[0], tuple):
@@ -304,7 +305,7 @@ The result of the first two examples are the same.
             return
         if plot is None:
             plot=pylab.plot
-        x,y = split(dd)
+        _, _, x, y = split(dd)
         x=pylab.array(x)
         if "label" not in kwargs:
             kwargs["label"] = "$p(k{0})$, {1} binned".format(
@@ -315,8 +316,8 @@ The result of the first two examples are the same.
         title = u"%s distribution" % self.degree_type
         pylab.title(title.capitalize())
         if with_powerlaw:
-            kwargs.pop("marker", None)
-            kwargs.pop("label", None)
+            for arg in ["marker", "label"]:
+                kwargs.pop(arg, None)
             self.plot_powerlaw(**kwargs)
         pylab.show()
         return p
@@ -352,9 +353,9 @@ The result of the first two examples are the same.
         if "marker" not in kwargs:
             kwargs["marker"] = ""
 
-        x,y = split(dd)
-        xerr_r = [ (self.division_points[i+1] - x[i]) for i in range(len(dd)) ]
-        xerr_l = [ (x[i] - self.division_points[i])  for i in range(len(dd)) ]
+        x_low, x_high, x, height = split(dd)
+        xerr_r = [ (x_low[i] - x[i]) for i in range(len(dd)) ]
+        xerr_l = [ (x[i] - x_high[i])  for i in range(len(dd)) ]
         p = pylab.errorbar(x,y,xerr=[xerr_l, xerr_r], fmt=".", **kwargs)
         pylab.gca().set_yscale("log")
         pylab.gca().set_xscale("log")
@@ -365,6 +366,11 @@ The result of the first two examples are the same.
     def bar_plot(self, xscale="linear", yscale="linear", **kwargs):
         """Plot the degree distribution with bars.
 
+        Parameters:
+            xscale: "linear" or "log"
+            yscale: "linear" or "log"
+            with_marker: boolean
+                Plots with marker as well.
         """
 
         try:
@@ -372,21 +378,32 @@ The result of the first two examples are the same.
         except AttributeError:
             print self.binning_warning
             return
-        dd = self.dd_smeared
+        with_marker = kwargs.pop("with_marker", False)
+        with_powerlaw = kwargs.pop("with_powerlaw", False)
 
         if "label" not in kwargs:
             kwargs["label"] = "$p(k{0})$, {1} binned".format(
                                         self.texindex, self.binning)
-        x,height = split(dd)
-        left = self.division_points[:-1]
-        width = [self.division_points[i+1] - self.division_points[i]
-                for i in range(len(self.division_points)-1)]
-        min_height = min(hei for hei in height if hei > 0)
-        p = pylab.bar(left, height, width,
-                bottom=10**int(numpy.log10(min_height/1.02)),
+        x_low, x_high, x, y = split(dd)
+        width = [xh - xl for xl, xh, _, _ in dd]
+        y_min = min(yy for yy in y if yy > 0)
+        bottom = 10**numpy.floor(numpy.log10(y_min/1.02))
+        height = [yy - bottom if yy > 0 else 0 for yy in y]
+        p = pylab.bar(x_low, height, width,
+                bottom=bottom,
                 **kwargs)
         pylab.gca().set_yscale(yscale)
         pylab.gca().set_xscale(xscale)
+        kwargs["markerfacecolor"] = kwargs.get("markerfacecolor", "gold")
+        kwargs["marker"] = kwargs.get("marker", "D")
+        if with_marker:
+            self.plot(**kwargs)
+
+        if with_powerlaw:
+            for arg in ["marker", "label", "markerfacecolor"]:
+                kwargs.pop(arg, None)
+            kwargs["color"] = "red"
+            self.plot_powerlaw(**kwargs)
 
         pylab.show()
         return p
@@ -427,16 +444,16 @@ The result of the first two examples are the same.
 
     def bin_smearing(self):
         """Calculates the binned distribution."""
-        x = [i for i, j in self.dd]
+        abscissa, ordinate = split(self.dd)
+        x = abscissa
         if self.binning in ["all", None]:
-            dd_smeared = self.dd
+            dd_smeared = [(x-.5, x+.5, x, y) for x, y in self.dd]
         elif self.binning in ["log", "logarithmic"]:
             # borders like 1,2,4,8,16
             probabilities, division_points = logarithmic_binning(self.dd, l=1, mult=2)
-            self.division_points = division_points
             mean_degrees = [sqrt(division_points[i]*division_points[i+1])
                               for i in range(len(probabilities))]
-            dd_smeared =  zip(mean_degrees, probabilities)
+            dd_smeared =  zip(division_points[:-1], division_points[1:], mean_degrees, probabilities)
         elif self.binning == "ondemand":
             if len(self.dd) == 1:
                 dd_smeared = self.dd
@@ -445,13 +462,15 @@ The result of the first two examples are the same.
                         for i in range(len(self.dd) - 1)]
                 first_division_point = x[0]**2 / inner_division_points[0]
                 last_division_point =  x[-1]**2 / inner_division_points[-1]
-                self.division_points = [first_division_point] + \
+                division_points = [first_division_point] + \
                     inner_division_points + \
                     [last_division_point]
                 dd_smeared = [
-                    (self.dd[i][0],
+                    (division_points[i],
+                     division_points[i+1],
+                     self.dd[i][0],
                      self.dd[i][1] /
-                          (self.division_points[i+1] - self.division_points[i])
+                          (division_points[i+1] - division_points[i])
                     )
                     for i in range(len(self.dd))
                     ]
