@@ -3,8 +3,99 @@
 
 """Tests for the module called tools."""
 
-from cxnet.tools import average_values
+from cxnet.tools import average_values, decorator_generator, find_value
 import unittest
+
+class FindValue(unittest.TestCase):
+    """Tests for find_value function."""
+
+    def test_known_values(self):
+        "find_value should return with the known values"
+        known_values = (
+                (("o", {"out":4}), 4),
+                (("out", {"out":4, "outer":5}), 4),
+
+            )
+        for args, result in known_values:
+            self.assertEqual(find_value(*args), result)
+
+    def test_case_insensitivity(self):
+        "find_value should neglect cases"
+        known_values = (
+                (("O", {"out":4}), 4),
+                (("oUt", {"out":4}), 4),
+                (("Out", {"out":4}), 4),
+                (("OUT", {"out":4}), 4),
+
+            )
+        for args, result in known_values:
+            self.assertEqual(find_value(*args), result)
+
+    def test_bad_values(self):
+        "find_value should rise exception in doubt"
+        known_values = (
+                ("q", {"out":4}),
+                ("out", {"outest":4, "outer":5}),
+
+            )
+        for args in known_values:
+            self.assertRaises(ValueError, find_value, *args)
+
+
+IN, OUT, ALL, IG, BRM, BRMA, BRC = range(7)
+values = {"in":IN, "out":OUT, "all":ALL,
+          "ig":IG, "brm":BRM, "brma":BRMA, "brc":BRC}
+
+directed  = decorator_generator("mode", values, 0)
+directed1 = decorator_generator("mode", values, 1)
+
+@directed
+def decorated_function(mode):
+    """helper function for the tests of decorator_generator"""
+    return mode
+
+@directed1
+def decorated_function1(x, mode, y):
+    """helper function for the tests of decorator_generator"""
+    return mode
+
+class DecoratorGenerator(unittest.TestCase):
+    """Tests for decorator_generator function."""
+
+    def test_case(self):
+        "decorator_generator should be case insensitive"
+        self.assertEqual(decorated_function(mode="out"), OUT)
+        self.assertEqual(decorated_function(mode="oUt"), OUT)
+        self.assertEqual(decorated_function(mode="Out"), OUT)
+        self.assertEqual(decorated_function(mode="all"), ALL)
+        self.assertEqual(decorated_function(mode="aLL"), ALL)
+        self.assertEqual(decorated_function(mode="aLl"), ALL)
+
+    def test_shorting(self):
+        "decorator_generator should recognize abbreviated values"
+        self.assertEqual(decorated_function(mode="o"), OUT)
+        self.assertEqual(decorated_function(mode="O"), OUT)
+        self.assertEqual(decorated_function(mode="OU"), OUT)
+        self.assertEqual(decorated_function(mode="A"), ALL)
+        self.assertEqual(decorated_function(mode="a"), ALL)
+        self.assertEqual(decorated_function(mode="al"), ALL)
+
+
+    def test_exact_values(self):
+        "decorator_generator should recognize exact values even if it is a prefix"
+        for key, value in values.iteritems():
+            self.assertEqual(decorated_function(mode=key), value)
+
+    def test_divers(self):
+        "decorator_generator should raise exception if there are more possibilities"
+        self.assertRaises(ValueError, decorated_function, mode="i")
+        self.assertRaises(ValueError, decorated_function, mode="I")
+        self.assertRaises(ValueError, decorated_function, mode="ar")
+
+    def test_positional(self):
+        """decorator_generator should work with positional arguments, it seems hard to solve"""
+        self.assertEqual(decorated_function("out"), OUT)
+        self.assertEqual(decorated_function1(0, "out", 0), OUT)
 
 class AverageValues(unittest.TestCase):
     """Tests the average_values function."""
