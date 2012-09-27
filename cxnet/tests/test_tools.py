@@ -3,61 +3,90 @@
 
 """Tests for the module called tools."""
 
-from cxnet.tools import average_values, decorator_generator, find_value
+from cxnet.tools import (average_values, decorator_generator,
+                    StandardValue, default_value)
 import unittest
 
-class FindValue(unittest.TestCase):
-    """Tests for find_value function."""
+class TestStandardValue(unittest.TestCase):
+    """Tests for standard_value function."""
+
+    def test_standard_values(self):
+        "standard_value should return the standard values unchanged"
+        values = {"in":2, "out":1, "all":3}
+        standard_value = StandardValue(values)
+        for value in values.values():
+            self.assertEqual(standard_value.get(value), value)
 
     def test_known_values(self):
-        "find_value should return with the known values"
+        "standard_value should return with the known values"
         known_values = (
-                (("o", {"out":4}), 4),
-                (("out", {"out":4, "outer":5}), 4),
+                ("o", {"out":4}, 4),
+                ("out", {"out":4, "outer":5}, 4),
 
             )
-        for args, result in known_values:
-            self.assertEqual(find_value(*args), result)
+        for value, values, result in known_values:
+            standard_value = StandardValue(values)
+            self.assertEqual(standard_value.get(value), result)
 
     def test_case_insensitivity(self):
-        "find_value should neglect cases"
+        "standard_value should neglect cases"
         known_values = (
-                (("O", {"out":4}), 4),
-                (("oUt", {"out":4}), 4),
-                (("Out", {"out":4}), 4),
-                (("OUT", {"out":4}), 4),
+                ("O", {"out":4}, 4),
+                ("oUt", {"out":4}, 4),
+                ("Out", {"out":4}, 4),
+                ("OUT", {"out":4}, 4),
 
             )
-        for args, result in known_values:
-            self.assertEqual(find_value(*args), result)
+        for value, values, result in known_values:
+            standard_value = StandardValue(values)
+            self.assertEqual(standard_value.get(value), result)
 
     def test_bad_values(self):
-        "find_value should rise exception in doubt"
+        "standard_value should rise exception in doubt"
         known_values = (
                 ("q", {"out":4}),
                 ("out", {"outest":4, "outer":5}),
 
             )
-        for args in known_values:
-            self.assertRaises(ValueError, find_value, *args)
+        for value, values in known_values:
+            standard_value = StandardValue(values)
+            self.assertRaises(ValueError, standard_value.get, value)
 
 
 IN, OUT, ALL, IG, BRM, BRMA, BRC = range(7)
 values = {"in":IN, "out":OUT, "all":ALL,
           "ig":IG, "brm":BRM, "brma":BRMA, "brc":BRC}
 
-directed  = decorator_generator("mode", values, 0)
-directed1 = decorator_generator("mode", values, 1)
+DEFAULT = 0
+directed  = decorator_generator("mode", values, default=DEFAULT)
 
 @directed
 def decorated_function(mode):
     """helper function for the tests of decorator_generator"""
     return mode
 
-@directed1
+@directed
 def decorated_function1(x, mode, y):
     """helper function for the tests of decorator_generator"""
     return mode
+
+class DecoratedInitClass(object):
+    """A Class with decorated __init__
+    """
+    @directed
+    def __init__(self, **kwargs):
+        self.mode = kwargs["mode"]
+    def get_mode(self):
+        return self.mode
+
+
+class TestDefaultValue(unittest.TestCase):
+    """Tests for default_value function."""
+
+    def test_known_values(self):
+        def fn(a, b=1, c=2, *args, **kwargs): pass
+        self.assertEqual(default_value(fn, "b"), 1)
+        self.assertEqual(default_value(fn, "c"), 2)
 
 class DecoratorGenerator(unittest.TestCase):
     """Tests for decorator_generator function."""
@@ -80,22 +109,53 @@ class DecoratorGenerator(unittest.TestCase):
         self.assertEqual(decorated_function(mode="a"), ALL)
         self.assertEqual(decorated_function(mode="al"), ALL)
 
-
     def test_exact_values(self):
         "decorator_generator should recognize exact values even if it is a prefix"
         for key, value in values.iteritems():
             self.assertEqual(decorated_function(mode=key), value)
 
+    def test_none_values(self):
+        "decorator_generator should return default values for None argument"
+        self.assertEqual(decorated_function(mode=None), DEFAULT)
+        self.assertEqual(decorated_function(None), DEFAULT)
+        self.assertEqual(decorated_function1(1, None, 3), DEFAULT)
+        self.assertEqual(decorated_function1(1, mode=None, y=1), DEFAULT)
+
     def test_divers(self):
         "decorator_generator should raise exception if there are more possibilities"
         self.assertRaises(ValueError, decorated_function, mode="i")
         self.assertRaises(ValueError, decorated_function, mode="I")
-        self.assertRaises(ValueError, decorated_function, mode="ar")
+        self.assertRaises(ValueError, decorated_function, mode="br")
+
+    def test_not_pass(self):
+        "decorator_generator should raise exception if there is no possibility"
+        self.assertRaises(ValueError, decorated_function, mode="q")
+        self.assertRaises(ValueError, decorated_function, mode="alla")
+        self.assertRaises(ValueError, decorated_function1, 1, "q", 2)
 
     def test_positional(self):
         """decorator_generator should work with positional arguments, it seems hard to solve"""
         self.assertEqual(decorated_function("out"), OUT)
         self.assertEqual(decorated_function1(0, "out", 0), OUT)
+
+    def test_decorated_init(self):
+        """decorator_generator should work with __init__ method"""
+        dec_init = DecoratedInitClass(mode="o")
+        self.assertEqual(dec_init.get_mode(), OUT)
+        dec_init = DecoratedInitClass()
+        self.assertEqual(dec_init.get_mode(), DEFAULT)
+
+    def test_vocabular(self):
+        'The doctest should work properly.'
+        word = decorator_generator("word", {"in":"in", "out":"aus", "ill":"Krank"})
+        @word
+        def translate(word):
+            return word
+        self.assertEqual(translate("o"), "aus")
+        self.assertEqual(translate(word="o"), "aus")
+        self.assertEqual(translate("oUt"), "aus")
+        self.assertEqual(translate("il"), "Krank")
+        self.assertRaises(ValueError, translate, "i")
 
 class AverageValues(unittest.TestCase):
     """Tests the average_values function."""
