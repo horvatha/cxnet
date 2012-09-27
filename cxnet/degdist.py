@@ -44,8 +44,6 @@ def logarithmic_binning(dd, l=1, mult=2):
         l = l*mult
         start=stop
         stop = stop+l
-        #import pdb; pdb.set_trace()
-
     return ebin, division_points
 
 class DegreeDistribution:
@@ -55,7 +53,7 @@ class DegreeDistribution:
       `network_or_degree_list`:
          the investigated network (NetworkX or IGraph)
          or the list of degrees or the dict of the form {vertex:degree}.
-      `direction`: "in", "out", None [default]
+      `mode`: "in", "out", None [default]
          the direction of the connection to count.
          If None, plain degree will be used.
       `binning`: None, "all", "ondemand", "log" or "logarithmic"
@@ -88,7 +86,7 @@ class DegreeDistribution:
         self.kwargs = kwargs
         self.gamma = None # The absolute value of exponent
 
-        self.direction = kwargs.pop("direction")
+        self.direction = kwargs.pop("mode")
 
         # Argument can be a network or a degree list.
         # We create degree list self.deg
@@ -566,7 +564,7 @@ if __name__ == "__main__":
     pylab.savefig("tmp_degdist.png")
 
     pylab.clf()
-    dd = DegreeDistribution(g, direction="out")
+    dd = DegreeDistribution(g, mode=OUT)
     dd.set_binning("log")
     dd.loglog(with_powerlaw=True, marker="d")
     pylab.legend()

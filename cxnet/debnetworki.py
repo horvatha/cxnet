@@ -28,6 +28,7 @@ except ImportError:
 import platform
 import pylab
 import tools
+from tools import OUT, IN, ALL
 import powerlaw
 
 
@@ -71,13 +72,14 @@ class Network(igraph.Graph):
         #    kwargs["edge_color"] = "orange"
         igraph.plot(self, target, **kwargs)
 
-    def cxlargest_degrees(self, direction=None, limit=None, print_it=False):
+    @tools.direction
+    def cxlargest_degrees(self, mode=ALL, limit=None, print_it=False):
         """Returns with the vertices with the largest degrees.
 
         Parameters:
-            direction: default None
-                Can be 'in', 'out', or None, it will be use indegree, outdegree
-                or (plain) degree respectively.
+            mode: "out", "in", "all" (or OUT, IN, ALL)
+                It uses out-degree, in-degree or (plain) degree
+                respectively. Default is all.
 
             limit: integer or None, default None
                Only the packages with the degree < limit will listed.
@@ -89,6 +91,9 @@ class Network(igraph.Graph):
                - in: 300
                - out: 50
 
+            print_it: boolean
+                Print the result in a pretty way.
+
         Returns:
             hd: a list of pairs of (degree, package name)
 
@@ -98,34 +103,33 @@ class Network(igraph.Graph):
 
         """
 
-        if direction is None:
+        assert mode in [OUT, IN, ALL], 'mode argument must be OUT, IN or ALL.'
+        if mode is ALL:
             if limit is None:
                 limit = 500
             vs = self.vs(_degree_ge=limit)
             degree = self.degree
-            direction = ""  # for the file name
-        elif direction == 'in':
+        elif mode == IN:
             if limit is None:
                 limit = 300
             vs = self.vs(_indegree_ge=limit)
             degree = self.indegree
-        elif direction == 'out':
+        elif mode == OUT:
             if limit is None:
                 limit = 50
             vs = self.vs(_outdegree_ge=limit)
             degree = self.outdegree
-        else:
-            raise ValueError('Argument direction must be "in", "out" or None.')
-        list = [(degree(v), v["name"]) for v in vs]
-        list.sort(reverse=True)
+        list_ = [(degree(v), v["name"]) for v in vs]
+        list_.sort(reverse=True)
 
-        lines = ["%6d %-20s\n" % pair for pair in list]
+        lines = ["%6d %-20s\n" % pair for pair in list_]
+        lines.append("Degree limit: {}\n".format(limit))
         if print_it:
             for line in lines:
                 print line[:-1]  # \n not printed
-        with open("largest_%sdegree.txt" % direction, "w") as f:
+        with open("largest_%sdegree.txt" % {OUT:"out-", IN:"in-", ALL:""}[mode], "w") as f:
             f.writelines(lines)
-        return list
+        return list_
 
     def cxneighbors(self, pkg_name):
         """Returns with the successors and predecessors ("out and inneighbors")
@@ -533,7 +537,7 @@ class Network(igraph.Graph):
             with_powerlaw: int, float or None
                 if integer or float, it plots a power-law function with this
                 exponent, if None, it does not plot.
-            direction: "in", "out" ,"" or None or cxnet.IN, cxnet.OUT, cxnet.ALL
+            mode: "in", "out" ,"" or None or cxnet.IN, cxnet.OUT, cxnet.ALL
                 if "in" or "out", it uses indegree and outdegree instead of degree
                 respectively
             coeff: int, float
@@ -544,7 +548,7 @@ class Network(igraph.Graph):
                 linestyle of the power-law function
 
         """
-        direction = kwargs.pop("direction")
+        direction = kwargs.pop("mode")
         powerlaw_parameters = dict((param, kwargs.pop(param))
                     for param
                     in ["coeff", "powerlaw_marker", "powerlaw_linestyle"]

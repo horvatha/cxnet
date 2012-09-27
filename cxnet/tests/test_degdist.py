@@ -36,35 +36,35 @@ class DirectedNetwork(unittest.TestCase):
     def test_directions(self):
         "The direction arguments should work correctly."
         for dircode in self.direction_dict:
-            dd0 = cxnet.DegreeDistribution(self.net, direction=dircode)
+            dd0 = cxnet.DegreeDistribution(self.net, mode=dircode)
             #print repr({dircode: (dd0.dd, dd0.n_0, dd0.cumulative_distribution(), dd0.exponent(k_min=1))})
             for direction in self.direction_dict[dircode]:
-                dd = cxnet.DegreeDistribution(self.net, direction=direction)
+                dd = cxnet.DegreeDistribution(self.net, mode=direction)
                 self.assertEqual(dd.direction, dircode)
                 self.assertEqual(dd.dd, dd0.dd)
 
     def test_dd(self):
         "The dd values should be correct."
         for dircode in self.known_values:
-            dd = cxnet.DegreeDistribution(self.net, direction=dircode)
+            dd = cxnet.DegreeDistribution(self.net, mode=dircode)
             self.assertEqual(dd.dd, self.known_values[dircode][0])
 
     def test_n_0(self):
         "The number of zero-degree-nodes should be correct."
         for dircode in self.known_values:
-            dd = cxnet.DegreeDistribution(self.net, direction=dircode)
+            dd = cxnet.DegreeDistribution(self.net, mode=dircode)
             self.assertEqual(dd.n_0, self.known_values[dircode][1])
 
     def test_cumulative_distribution(self):
         "The cumulative_distribution should be correct."
         for dircode in self.known_values:
-            dd = cxnet.DegreeDistribution(self.net, direction=dircode)
+            dd = cxnet.DegreeDistribution(self.net, mode=dircode)
             self.assertEqual(dd.cumulative_distribution(), self.known_values[dircode][2])
 
     def test_cumulative_distribution(self):
         "The value and sigma of the exponent should be correct."
         for dircode in self.known_values:
-            dd = cxnet.DegreeDistribution(self.net, direction=dircode)
+            dd = cxnet.DegreeDistribution(self.net, mode=dircode)
             self.assertEqual(dd.exponent(k_min=1), self.known_values[dircode][3])
 
 class Creation(unittest.TestCase):
