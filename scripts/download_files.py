@@ -18,31 +18,46 @@ from __future__ import print_function
 import sys
 import os
 import urllib
+import signal
 
 __author__ = 'Arpad Horvath'
 
-baseurl = "http://django.arek.uni-obuda.hu/pack/"
-file_list = "files.txt"
+finish = False
+def signal_handler(signal, frame):
+    global finish
+    finish = True
 
-urllib.urlretrieve("".join([baseurl, file_list]),
-                    os.path.join(".", file_list))
-with open(file_list) as f:
-    files = [line.strip() for line in f.readlines()]
+def download_files(baseurl, file_list, extra_files):
+    urllib.urlretrieve(os.path.join(baseurl, file_list),
+                        os.path.join(".", file_list))
+    with open(file_list) as f:
+        files = [line.strip() for line in f.readlines()]
 
-files = set(files)
-files_here = set(os.listdir('.'))
-files_download = files - files_here
+    files = set(files)
+    files_here = set(os.listdir('.'))
+    common_files = files_here & files
+    files_download = sorted(list(files - files_here))
 
+    print("{0} files will be downloaded, {1} files is here, {2} files is here from the file list.".format
+            (len(files_download), len(files_here), len(common_files)))
 
-print("{0} files will be downloaded, {1} files is already here.".format
-        (len(files_download), len(files_here)))
+    if len(sys.argv) > 1 and sys.argv[1] == "-l":
+        print("New files\n- "+"\n- ".join(files_download))
+        sys.exit()
 
-if len(sys.argv) > 1 and sys.argv[1] == "-l":
-    print("New files\n- "+"\n- ".join(files_download))
-    sys.exit()
+    for file_set in [files_download, set(extra_files)]:
+        for file_ in file_set:
+            print("  ", file_)
+            urllib.urlretrieve("".join([baseurl, file_]),
+                            os.path.join(".", file_))
+            if finish:
+                sys.exit(1)
 
-for file_ in files_download:
-    print("  ", file_)
-    urllib.urlretrieve("".join([baseurl, file_]),
-                    os.path.join(".", file_))
+for baseurl, file_list in [
+        ("http://django.arek.uni-obuda.hu/pack/ubuntu1204_on_debian/", "files.txt"),
+        ("http://ns.arek.uni-obuda.hu/repo/pack/ubuntu1204_on_debian/", "files_ns.txt"),
+        ]:
+    extra_files = ["number_of_nodes_and_edges"]
+    signal.signal(signal.SIGINT, signal_handler)
+    download_files(baseurl, file_list, extra_files)
 
