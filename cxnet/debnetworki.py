@@ -219,7 +219,7 @@ class Network(igraph.Graph):
             for edge in self.es:
                 edge["color"] = ecolors[edge["type"]]
 
-    def cxneighborhood(self, pkg_name, plot=True, **kwargs):
+    def cxneighborhood(self, pkg_name, plot=True, curvature=1, **kwargs):
         """Returns with the successors and predecessors and the package itself and can plot them.
 
         Parameters:
@@ -232,9 +232,8 @@ class Network(igraph.Graph):
                 - If other string, the output will be a file named in the string.
                 - If True, plot to the screen.
                 - If False, do not plot.
-            return_network: boolean
-                If True, returns with a cxnet.Network instance instead of
-                VertexSequence
+            **kwargs: dict
+                keywords to the plot command
 
         Returns:
             Vertex sequence of the neighborhood.
@@ -270,8 +269,8 @@ class Network(igraph.Graph):
                     print """There is no package name %s\nnor package name including it.""" % pkg_name
                     return []
             ix = self.vs["name"].index(pkg_name)
-        p = self.predecessors(ix)
         s = self.successors(ix)
+        p = list(set(self.predecessors(ix)) - set(s))  #TODO should have a more elaborated method
         neighborhood = [ix]
         neighborhood.extend(p)
         neighborhood.extend(s)
@@ -282,8 +281,7 @@ class Network(igraph.Graph):
             attributes = self.vs.attributes()
             if "color" not in attributes and "type" in attributes:
                 self.cxcolorize()
-            horizontal_dist = 0.2
-            shift = lambda y: horizontal_dist * (1 + math.cos(math.pi * y))
+            shift = lambda y: 1 + curvature*math.cos(math.pi * y)
             coords = [(0,0)]
             if p:
                 delta = 1 / (len(p) - .99)
