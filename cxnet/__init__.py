@@ -69,6 +69,59 @@ def indegree_changes(network1, network2, **kwargs):
         pylab.savefig(outfile)
     pylab.show()
 
+def savepdf(fname, *args, **kwargs):
+    """Saves the plot as pdf through eps file with epspdf command.
+
+    The eps file will be kept as well.
+    Sometimes the pdf output of the savefig is not good."""
+    import matplotlib.pyplot as plt
+    if fname.lower().endswith(".pdf"):
+        fname0 = fname[:-4]
+    else:
+        fname0 = fname
+    epsname = "{0}.eps".format(fname0)
+    plt.savefig(epsname, *args, **kwargs)
+    os.system("epspdf {0}".format(epsname))
+
+def savefigs(fname0, *args, **kwargs):
+    """Save figures into given formats.
+
+    Input:
+    - fname0: the name of the file without extension.
+    - args: postional arguments. These arguments will be given to the savefig
+      function.
+    - kwargs: keyword arguments including the formats in the format given
+      below. Other arguments will be given to the savefig function.
+
+    Formats can be given with a space separated string of
+    the formats below:
+    - epspdf: it saves into pdf and eps. pdf format is created from
+      eps with the epspdf command. It must be installed.
+    - other formats: the formats that are known by the plt.savefig function.
+
+    Example:
+
+    We create the figure.eps, figure.pdf and figure.png files as:
+
+    >>> savefigs("figure")
+
+    We create the figure.png and figure.jpg files as:
+
+    >>> savefigs("figure", formats="png jpg")
+
+    """
+
+    formats = kwargs.pop("formats", "epspdf png")
+    if isinstance(formats, str):
+        formats = formats.split()
+    for format in formats:
+        if format == "epspdf":
+            savepdf(fname0, *args, **kwargs)
+        else:
+            import matplotlib.pyplot as plt
+            fname = "{0}.{1}".format(fname0, format)
+            plt.savefig(fname, *args, **kwargs)
+
 # If the choosen graph module can not be imported.
 if graph_module is False:
     print """There is not graph module imported.
