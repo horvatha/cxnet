@@ -122,11 +122,11 @@ class DegreeDistribution:
 
         self.max_deg = max(self.deg)
 
-        self.dd=[(i, j) for i, j in enumerate(numpy.bincount(self.deg))]
-        self.n_0 = self.dd[0][1]
-        self.dd=[(i, j) for i, j in self.dd if i > 0 and j > 0]
+        self.dd0=[(i, j) for i, j in enumerate(numpy.bincount(self.deg))]
+        self.n_0 = self.dd0[0][1]
+        self.dd0=[(i, j) for i, j in self.dd0 if i > 0 and j > 0]
         self.number_of_vertices = len(self.deg)
-        self.dd=[(i, j/self.number_of_vertices) for i, j in self.dd]
+        self.dd=[(i, j/self.number_of_vertices) for i, j in self.dd0]
 
         self.binning = kwargs.pop("binning", None)
         if self.binning is not None:
@@ -428,8 +428,8 @@ The result of the first two examples are the same.
         f.write(_("The number of vertices is %d. ") % self.number_of_vertices)
         f.write(_("The largest %s is %d.\n") % (self.degree_type, self.max_deg))
         f.write("\nDegree distribution:\n")
-        f.write(_("The number of vertices with zero %s is %d (%5.3f%%)\n") % \
-            (self.degree_type, self.n_0, self.n_0/self.number_of_vertices*100))
+        f.write(_("     0:%7.4f%%\n") % \
+            (self.n_0/self.number_of_vertices*100))
 
         column=1
         for degree, probability in self.dd:
