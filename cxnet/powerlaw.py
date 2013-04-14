@@ -34,5 +34,5 @@ def plot(exponent, xmax, xmin=1, coeff=1, num=1000, variable_name="k", **kwargs)
     assert isinstance(exponent, (float, int)), "the exponent must be integer or float"
     if "label" not in kwargs:
         coeff_tex = "" if coeff == 1 else r"{0:.3f}\times ".format(coeff)
-        kwargs["label"] = "${0}{1}^{{{2:.3f}}}$".format(coeff_tex, variable_name, exponent)
+        kwargs["label"] = r"${1}\mapsto {0}{1}^{{{2:.3f}}}$".format(coeff_tex, variable_name, exponent)
     return pylab.plot(x, coeff * x**exponent, **kwargs)
