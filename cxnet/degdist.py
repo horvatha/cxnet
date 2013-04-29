@@ -132,6 +132,8 @@ class DegreeDistribution:
         if self.binning is not None:
             self.bin_smearing()
         self.labelfontsize=15
+        if kwargs:
+            raise ValueError("kwargs must not have key(s): {0}".format(", ".join(kwargs.keys())))
 
     def cumulative_distribution(self):
         """Return the cumulative degree distribution
@@ -251,6 +253,7 @@ class DegreeDistribution:
         #pylab.gca().set_yscale("log")
         #pylab.gca().set_xscale("log")
         pylab.savefig(file)
+        pylab.show()
         return p
 
     def plot_powerlaw(self, **kwargs):
@@ -265,10 +268,12 @@ class DegreeDistribution:
 
         if self.gamma is None:
             self.exponent()
-        return powerlaw.plot(exponent=-self.gamma,
+        p = powerlaw.plot(exponent=-self.gamma,
                 xmax=self.max_deg, xmin=self.k_min,
                 **kwargs
                 )
+        pylab.show()
+        return p
 
     binning_warning = """You need to run dd.set_binning(b) first.
 Examples:
@@ -384,9 +389,13 @@ The result of the first two examples are the same.
                                         self.texindex, self.binning)
         x_low, x_high, x, y = split(dd)
         width = [xh - xl for xl, xh, _, _ in dd]
-        y_min = min(yy for yy in y if yy > 0)
-        bottom = 10**numpy.floor(numpy.log10(y_min/1.02))
-        height = [yy - bottom if yy > 0 else 0 for yy in y]
+        if yscale == "log":
+            y_min = min(yy for yy in y if yy > 0)
+            bottom = 10**numpy.floor(numpy.log10(y_min/1.02))
+            height = [yy - bottom if yy > 0 else 0 for yy in y]
+        else:
+            bottom = 0
+            height = y
         p = pylab.bar(x_low, height, width,
                 bottom=bottom,
                 **kwargs)
@@ -446,6 +455,7 @@ The result of the first two examples are the same.
         x = abscissa
         if self.binning in ["all", None]:
             dd_smeared = [(x-.5, x+.5, x, y) for x, y in self.dd]
+            self.binning = "all"
         elif self.binning in ["log", "logarithmic"]:
             # borders like 1,2,4,8,16
             probabilities, division_points = logarithmic_binning(self.dd, l=1, mult=2)
