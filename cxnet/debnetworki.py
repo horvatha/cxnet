@@ -297,6 +297,7 @@ class Network(igraph.Graph):
                     y+=delta
             vs["coord"] = coords
             subnetwork = vs.subgraph()
+            return_network = kwargs.pop("return_network", False)
             if kwargs.get("vertex_size") is None:
                 kwargs["vertex_size"] = max(500/max(len(p), len(s), 5), 8)
             if kwargs.get("margin") is None:
@@ -311,7 +312,7 @@ class Network(igraph.Graph):
             else:
                 subnetwork.plot(layout=subnetwork.vs["coord"], **kwargs)
 
-        return self.subgraph(vs) if kwargs.get("return_network") else vs
+        return self.subgraph(vs) if return_network else vs
 
     def cxdegdist(self, **kwargs):
         """Returns with a DegreDistribution class analyzing and plotting distribution.
@@ -319,7 +320,7 @@ class Network(igraph.Graph):
         Parameter:
             kwargs:
                 parameters to the DegreeDistribution class
-                Eg. direction {"in", "out", None}
+                Eg. mode {"in", "out", None}
 
         Returns:
             dd: DegreeDistribution class object (see help(dd) )

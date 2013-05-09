@@ -16,7 +16,7 @@ class DirectedNetwork(unittest.TestCase):
         self.direction_dict =  {
                 OUT: ("out", "OUT"),
                 IN:  ("in", "IN"),
-                ALL: ("", None),
+                ALL: (None, "All", "all"),
             }
         self.known_values = {
             OUT: ([(1, 0.14285714285714285), (2, 0.2857142857142857), (3, 0.14285714285714285), (4, 0.14285714285714285)],

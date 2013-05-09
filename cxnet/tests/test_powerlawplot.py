@@ -21,7 +21,7 @@ class WithPowerlaw(unittest.TestCase):
         self.net.cxclustering_degree_plot()
         pylab.savefig("clustering_degree.pdf")
         pylab.clf()
-        self.net.cxclustering_degree_plot(direction="in")
+        self.net.cxclustering_degree_plot(mode="in")
         pylab.savefig("clustering_indegree.pdf")
 
     def test_clutering_degree_plot_linestyle(self):
