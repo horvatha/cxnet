@@ -17,6 +17,10 @@ import inspect
 
 OUT, IN, ALL = 1, 2, 3
 WEAK, STRONG = 1, 2
+vertex_colors = ['blue', 'fuchsia', 'aqua', 'grey', 'maroon', 'olive',
+    'yellow', 'teal', 'navy', 'green', 'white', 'silver', 'red', 'lime',
+    'orange', 'pink', 'gold']
+
 
 #@decorators.trace
 def average_values(x, y, x_min=None):

@@ -135,6 +135,7 @@ You can try:
 # Some classes and functions useful for both graph modules.
 from degdist import DegreeDistribution, split
 from archives import get_netdata, put_debnetdata
+from tools import vertex_colors
 
 if __name__ == "__main__":
     dn=debnetwork()
