@@ -161,7 +161,7 @@ class DegreeDistribution:
         p = pylab.loglog(x,y, **kwargs)
         pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
         pylab.ylabel("$P(k%s)$" % self.texindex, fontsize=self.labelfontsize)
-        pylab.title(u"Cumulative %s distribution" % self.degree_type)
+        pylab.title("Cumulative %s distribution" % self.degree_type)
         if with_powerlaw:
             kwargs.pop("marker", None)
             kwargs.pop("label", None)
@@ -248,7 +248,7 @@ class DegreeDistribution:
         p = pylab.errorbar(K, G, yerr=S)
         pylab.xlabel("k_min")
         pylab.ylabel("gamma%s" % self.index)
-        pylab.title(u"The dependence from k_min of the exponent (%s)" % \
+        pylab.title("The dependence from k_min of the exponent (%s)" % \
                 self.degree_type)
         #pylab.gca().set_yscale("log")
         #pylab.gca().set_xscale("log")
@@ -316,7 +316,7 @@ The result of the first two examples are the same.
         p = plot(x,y,".", **kwargs)
         pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
         pylab.ylabel("$p(k%s)$" % self.texindex, fontsize=self.labelfontsize)
-        title = u"%s distribution" % self.degree_type
+        title = "%s distribution" % self.degree_type
         pylab.title(title.capitalize())
         if with_powerlaw:
             for arg in ["marker", "label"]:
