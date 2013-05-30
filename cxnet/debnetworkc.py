@@ -16,9 +16,10 @@ from __future__ import print_function
 import sys
 from apt import Cache
 import apt_pkg
-if apt_pkg.VersionCompare(apt_pkg.VERSION, "0.7.23") < 0:
-    print("Must use python-apt 0.7.23 or greater.")
-    sys.exit(1)
+version_compare = apt_pkg.VersionCompare if "VersionCompare" in dir(apt_pkg) else apt_pkg.version_compare
+if apt_pkg.version_compare(apt_pkg.VERSION, "0.7.23") < 0:
+        print("Must use python-apt 0.7.23 or greater.")
+        sys.exit(1)
 from cxnet.revision import get_revision
 import glob
 import re
