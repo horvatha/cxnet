@@ -3,14 +3,15 @@
 
 from __future__ import with_statement
 from __future__ import division
+from __future__ import print_function
 
 import math
 import igraph
 try:
     from debnetworkc import CommonDebNetwork
 except ImportError:
-    print """I could not import debnetworkc. Perhaps there is no apt module.
-You can not create deb dependency network."""
+    print("""I could not import debnetworkc. Perhaps there is no apt module.
+You can not create deb dependency network.""")
 else:
     from debnetworkc import PkgInfo
     from debnetworkc import TYPES
@@ -126,7 +127,7 @@ class Network(igraph.Graph):
         lines.append("Degree limit: {}\n".format(limit))
         if print_it:
             for line in lines:
-                print line[:-1]  # \n not printed
+                print(line[:-1]) # \n not printed
         with open("largest_%sdegree.txt" % {OUT:"out-", IN:"in-", ALL:""}[mode], "w") as f:
             f.writelines(lines)
         return list_
@@ -155,14 +156,14 @@ class Network(igraph.Graph):
         if pkg_name not in self.vs["name"]:
             find = self.cxfind(pkg_name)
             if len(find) == 1:
-                print """There is no package name %s.\n"""\
+                print("""There is no package name %s.\n"""\
                       """I will use %s instead.""" %\
-                      (pkg_name, find[0])
+                      (pkg_name, find[0]))
                 pkg_name = find[0]
             else:
-                print """There is no package name %s,\n"""\
+                print("""There is no package name %s,\n"""\
                       """but the package names below include it.\n """\
-                      % pkg_name, "\n ".join(find)
+                      % pkg_name, "\n ".join(find))
                 return (None, None)
         ix = self.vs["name"].index(pkg_name)
         if self.is_directed():
@@ -202,7 +203,7 @@ class Network(igraph.Graph):
                     if isinstance(value, float) and not math.isinf(value) and not math.isnan(value):
                         item[attr] = int(value)
                     elif value is not None and (math.isinf(value) or math.isnan(value)):
-                        print "The value of the {0} attribute is {1} ({2}).".format(attr, value, item["name"])
+                        print("The value of the {0} attribute is {1} ({2}).".format(attr, value, item["name"]))
         self.normalized = True
 
     def cxcolorize(self, vcolors=("yellow", "lightblue"), ecolors=("orange", "red", "blue")):
@@ -258,15 +259,15 @@ class Network(igraph.Graph):
             if pkg_name not in self.vs["name"]:
                 find = self.cxfind(pkg_name)
                 if len(find) == 1:
-                    print """There is no package name %s.\nI will use %s instead.""" %\
-                          (pkg_name, find[0])
+                    print("""There is no package name %s.\nI will use %s instead.""" %\
+                          (pkg_name, find[0]))
                     pkg_name = find[0]
                 elif len(find) > 1:
-                    print """There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
-                            "\n ".join(find)
+                    print("""There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
+                            "\n ".join(find))
                     return []
                 else:
-                    print """There is no package name %s\nnor package name including it.""" % pkg_name
+                    print("""There is no package name %s\nnor package name including it.""" % pkg_name)
                     return []
             ix = self.vs["name"].index(pkg_name)
         s = self.successors(ix)
@@ -373,8 +374,8 @@ class Network(igraph.Graph):
             d1, d2, d3 = linux_distribution
         elif linux_distribution is None:
             d1, d2, d3 = ["unknown"] * 3
-            print """I can not get the distribution name from the platform modul.
-            Platform modul is too old."""
+            print("""I can not get the distribution name from the platform modul.
+            Platform modul is too old.""")
         else:
             d1, d2, d3 = linux_distribution()
         distribution = " ".join([d1, d2, d3])
@@ -385,7 +386,7 @@ class Network(igraph.Graph):
         if not os.path.exists('netdata_zip'):
             os.mkdir('netdata_zip')
         if "gml.zip" in formats:
-            print "Writing to compressed gml..."
+            print("Writing to compressed gml...")
             name = "{0}.gml".format(name0)
             self.write(name, format="gml")
             import zipfile
@@ -395,17 +396,17 @@ class Network(igraph.Graph):
             archive.write(name)
             archive.close()
             os.remove(name)
-            print "See file '{name}'.".format(name=filename)
+            print("See file '{name}'.".format(name=filename))
         if "graphmlz" in formats:
-            print "Writing to compressed GraphML (graphmlz)..."
+            print("Writing to compressed GraphML (graphmlz)...")
             filename = "netdata_zip/%s.graphmlz" % name0
             self.write(filename, format="graphmlz")
-            print "See file '{name}'.".format(name=filename)
+            print("See file '{name}'.".format(name=filename))
         if "pickle" in formats:
-            print "Writing to compressed pickle (Python specific)..."
+            print("Writing to compressed pickle (Python specific)...")
             filename = "netdata_zip/%s.pickle" % name0
             self.write(filename)
-            print "See file '{name}'.".format(name=filename)
+            print("See file '{name}'.".format(name=filename))
         return name0
 
     def cxdescription(self, print_it=True):
@@ -476,7 +477,7 @@ class Network(igraph.Graph):
             if code is not None:
                 es = self.es.select(type=code)
                 self.delete_edges(es)
-                if test: print "\t", len(es), edge_attribute, "deleted" 
+                if test: print("\t {0} {1} deleted".format(len(es), edge_attribute))
             else:
                 raise TypeError("edge attribute", edge_attribute) #TODO
         for vertex_attribute in vertex:
@@ -484,18 +485,18 @@ class Network(igraph.Graph):
             if code is not None:
                 vs = self.vs.select(type=code)
                 self.delete_vertices(vs)
-                if test: print "\t", len(vs), vertex_attribute, "deleted"
+                if test: print("\t {0} {1} deleted".format(len(vs), vertex_attribute))
             elif vertex_attribute == "isolated":
                 isolated_vertices = [
                     c[0] for c in self.clusters(igraph.WEAK)
                     if len(c) == 1
                     ]
-                if test: print "\t", len(isolated_vertices), vertex_attribute, "deleted"
+                if test: print("\t {0} {1} deleted".format(len(isolated_vertices), vertex_attribute))
                 self.delete_vertices(isolated_vertices)
             elif vertex_attribute in ["i386", "amd64"]:
                 vs = self.vs.select(architecture=vertex_attribute)
                 if test:
-                    print "\t{0} vertex deleted (architecture {1})".format(len(vs), vertex_attribute)
+                    print("\t{0} vertex deleted (architecture {1})".format(len(vs), vertex_attribute))
                 self.delete_vertices(vs)
             else:
                 raise TypeError("vertex attribute", vertex_attribute) #TODO
@@ -517,7 +518,7 @@ class Network(igraph.Graph):
                 )
                 for type_ in set(object_[attribute]))
         for key in statdict:
-            print "{1:6} {0}".format(key, statdict[key])
+            print("{1:6} {0}".format(key, statdict[key]))
         return statdict
 
     def vstat(self, attribute=None):
@@ -589,12 +590,12 @@ def debnetwork():
     It needs the `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_ package installed.
     """
     cdn = CommonDebNetwork()
-    print "Transforming to numbered graph."
+    print("Transforming to numbered graph.")
     idgen = igraph.UniqueIdGenerator() # igraph/datatypes.py
     edgelist = [(idgen[x], idgen[y]) for x, y, t in cdn.edges]
     [idgen[vertex] for vertex in cdn.vertices]
     package_names = idgen.values()
-    print "Transforming to igraph."
+    print("Transforming to igraph.")
     debnet = Network(len(package_names), edgelist, directed=True)
     debnet.normalized = True
     debnet.es["type"] = [_type for _, _, _type in cdn.edges]
@@ -611,7 +612,7 @@ def debnetwork():
              vertex["version"],
              vertex["architecture"],
              ) = package_data
-    print "Setting vertex types."
+    print("Setting vertex types.")
     debnet.vs["type"] = 0
     for extra in cdn.extra_vertices():
         debnet.vs[idgen[extra]]["type"] = 1

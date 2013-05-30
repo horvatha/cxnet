@@ -72,9 +72,9 @@ if __name__ == "__main__":
     import packages
     g=packages.get_graph()
     cc = ClusteringCoefficient(g)
-    print  "Clustering coeff. for vim is %f" % cc.clustering_coefficient("vim")[2]
+    print("Clustering coeff. for vim is {0}".format(cc.clustering_coefficient("vim")[2]))
     acc = cc.avg_clustering_coefficient()
-    print acc
+    print(acc)
 
     N, M = g.number_of_nodes(), g.number_of_edges()
     print "%d él és %d él van a hálózatban."

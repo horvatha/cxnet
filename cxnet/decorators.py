@@ -52,13 +52,13 @@ callcounts = {}
 def trace(f):
     indent = '   '
     def _f(*args, **kwargs):
-        signature = '%s(%s)' % (f.__name__, ', '.join(map(repr, args)))
-        print '%s--> %s' % (trace.level*indent, signature)
+        signature = '{0}({1})'.format(f.__name__, ', '.join(map(repr, args)))
+        print('{0}--> {1}'.format(trace.level*indent, signature))
         trace.level += 1
         try:
             result = f(*args, **kwargs)
-            print '%s<-- %s == %s' % ((trace.level-1)*indent,
-                                      signature, result)
+            print('{0}<-- {1} == {2}'.format((trace.level-1)*indent,
+                                      signature, result))
         finally:
             trace.level -= 1
         return result
