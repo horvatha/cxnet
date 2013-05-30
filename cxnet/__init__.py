@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import absolute_import
 import os
 debug = False
 
@@ -30,11 +31,11 @@ if graph_module == "igraph":
             print("""I will use igraph. (It have been imported.)""")
         #from igraphtools import igraph_from_dot
         #from igraphtools import igraph_from_vertices_edges
-        from debnetworki import debnetwork
-        from debnetworki import Network
-        from debnetworki import load_netdata
-        import debnetworki
-        from debnetworkc import TYPES
+        from .debnetworki import debnetwork
+        from .debnetworki import Network
+        from .debnetworki import load_netdata
+        from . import debnetworki
+        from .debnetworkc import TYPES
         from igraph import summary
         from igraph import Graph
         from igraph import WEAK, STRONG # for net.components
@@ -52,9 +53,9 @@ elif graph_module == "networkx":
         from networkx import barabasi_albert_graph, erdos_renyi_graph, complete_graph
         from networkx import connected_components, connected_component_subgraphs
         from networkx import Graph, DiGraph
-        from debnetworkx import read
-        from debnetworkx import debnetwork
-        from debnetworkx import Network
+        from .debnetworkx import read
+        from .debnetworkx import debnetwork
+        from .debnetworkx import Network
         try:
             from networkx import draw
         except ImportError:
@@ -134,9 +135,9 @@ You can try:
 """)
 
 # Some classes and functions useful for both graph modules.
-from degdist import DegreeDistribution, split
-from archives import get_netdata, put_debnetdata
-from tools import vertex_colors
+from .degdist import DegreeDistribution, split
+from .archives import get_netdata, put_debnetdata
+from .tools import vertex_colors
 
 if __name__ == "__main__":
     dn=debnetwork()

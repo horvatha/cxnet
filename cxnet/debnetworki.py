@@ -4,20 +4,21 @@
 from __future__ import with_statement
 from __future__ import division
 from __future__ import print_function
+from __future__ import absolute_import
 
 import math
 import igraph
 try:
-    from debnetworkc import CommonDebNetwork
+    from .debnetworkc import CommonDebNetwork
 except ImportError:
     print("""I could not import debnetworkc. Perhaps there is no apt module.
 You can not create deb dependency network.""")
 else:
-    from debnetworkc import PkgInfo
-    from debnetworkc import TYPES
-from archives import get_netdata, put_debnetdata, get_archive_name
+    from cxnet.debnetworkc import PkgInfo
+    from cxnet.debnetworkc import TYPES
+from cxnet.archives import get_netdata, put_debnetdata, get_archive_name
 
-from degdist import DegreeDistribution
+from cxnet.degdist import DegreeDistribution
 from time import strftime, gmtime
 #from os.path import getatime
 import os
@@ -28,9 +29,9 @@ except ImportError:
     linux_distribution = None
 import platform
 import pylab
-import tools
-from tools import OUT, IN, ALL
-import powerlaw
+from . import tools
+from .tools import OUT, IN, ALL
+from . import powerlaw
 
 
 class Network(igraph.Graph):
@@ -681,7 +682,7 @@ def load_netdata(filename):
         tables posted at archive.routeviews.org.  This snapshot was created by Mark
         Newman from data for July 22, 2006 and is not previously published.
     """
-    from archives import get_filepath
+    from cxnet.archives import get_filepath
     head, tail = os.path.split(filename)
     if head or tail.endswith(".gml") or tail.endswith(".graphmlz"):
         os.path.isfile(filename)

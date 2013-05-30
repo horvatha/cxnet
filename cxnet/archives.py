@@ -8,6 +8,10 @@ It pull (and will put) network data from (and to) archives.
 """
 
 import urllib
+if "urlretrieve" in dir(urllib):
+    urlretrieve = urllib.urlretrieve
+else:
+    urlretrieve = urllib.request.urlretrieve
 import zipfile
 import os
 import igraph
@@ -172,7 +176,10 @@ def get_netdata(archive_name=None, unzip=True, path=system.rc_dir()):
             debian-6.0-packages-2011-02-03.gml, debian-6.0-packages-2011-02-03.txt
     """
 
-    if archive_name is None or archive_name not in network_archives.keys():
+    if archive_name is None:
+        for archive_name in network_archives.keys():
+            get_netdata(archive_name, unzip, path)
+    if archive_name not in network_archives.keys():
         print("""You need to choose an archive name.
 Use one of them:""")
         for i in network_archives.keys():

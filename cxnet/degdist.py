@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from __future__ import division
+from __future__ import absolute_import
 
 try:
     import gettext
@@ -23,9 +24,9 @@ else:
 import numpy
 
 import sys
-import tools
-from tools import OUT, IN, ALL
-import powerlaw
+from . import tools
+from .tools import OUT, IN, ALL
+from . import powerlaw
 
 #split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
 split = lambda List: zip(*List)

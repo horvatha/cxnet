@@ -158,9 +158,7 @@ class CommonDebNetwork:
             return None
 
     def summary(self):
-        # print "{0:5} vertices, {1:6} edges".format(len(self.vertices), len(self.edges))
-        # Does work with 2.5 used in Debian Lenny.
-        print("%5s vertices, %6s edges" % (len(self.vertices), len(self.edges)))
+        print("{0:5} vertices, {1:6} edges".format(len(self.vertices), len(self.edges)))
 
     def extra_targets(self):
         """Targets not in vertices."""

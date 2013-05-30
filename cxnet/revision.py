@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import cxnet
 import subprocess
-from tools import working_directory
+from cxnet.tools import working_directory
 
 def cxnet_path():
     file_ = cxnet.__file__
@@ -23,6 +23,7 @@ def get_revision(path=None):
     """
     if path is None:
         path = cxnet_path()
+    #TODO elif path not valid, raise something
     for getter in [get_git_revision, get_bzr_revision]:
         revision = getter(path)
         if revision:

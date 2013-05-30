@@ -77,4 +77,4 @@ if __name__ == "__main__":
     print(acc)
 
     N, M = g.number_of_nodes(), g.number_of_edges()
-    print "%d él és %d él van a hálózatban."
+    print("{0} csúcs és {1} él van a hálózatban.".format(N, M))
