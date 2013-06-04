@@ -651,7 +651,7 @@ def get_update_time():
         update_time = None
     return update_time
 
-def load_netdata(filename):
+def load(filename):
     """Loads netdata from a gml file in netdata directory.
 
     If it is not there, it will download it.
@@ -671,12 +671,12 @@ def load_netdata(filename):
         I have found an rc file: /home/ha/.cxnetrc.py.
         The graph_module was set in the rc file to "igraph".
         I will use igraph. (It have been imported.)
-        >>> net=cxnet.load_netdata("as-")
+        >>> net=cxnet.load("as-")
         'netdata/as-22july06.gml' have been loaded.
         >>> print(net.summary())
         IGRAPH U--- 22963 48436 -- as-22july06.gml
-        + attr: info (g), name (g), id (v), label (v)
-        >>> print(net['info'])
+        + attr: Description (g), name (g), id (v), label (v)
+        >>> print(net.cxdescription())
         The file as-22july06.gml contains a symmetrized snapshot of the structure
         of the Internet at the level of autonomous systems, reconstructed from BGP
         tables posted at archive.routeviews.org.  This snapshot was created by Mark

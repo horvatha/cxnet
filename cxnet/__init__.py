@@ -33,7 +33,7 @@ if graph_module == "igraph":
         #from igraphtools import igraph_from_vertices_edges
         from .debnetworki import debnetwork
         from .debnetworki import Network
-        from .debnetworki import load_netdata
+        from .debnetworki import load
         from . import debnetworki
         from .debnetworkc import TYPES
         from igraph import summary
