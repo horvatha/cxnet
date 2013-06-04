@@ -6,8 +6,8 @@ import networkx
 try:
     from .debnetworkc import CommonDebNetwork
 except ImportError:
-    print """I could not import debnetworkc. Perhaps there is no apt module.
-You can not create deb dependency network."""
+    print("""Could not import debnetworkc. Perhaps there is no apt module.
+You can not create deb dependency network.""")
 
 from .degdist import DegreeDistribution
 from time import strftime, gmtime

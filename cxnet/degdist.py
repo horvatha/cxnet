@@ -241,7 +241,7 @@ class DegreeDistribution:
             k_min = k - 0.5
             g,s = self.exponent(k_min)
             result =  "k_min=%.1f: %f+-%f" % (k,g,s)
-            print result
+            print(result)
             K.append(k)
             G.append(g)
             S.append(s)
