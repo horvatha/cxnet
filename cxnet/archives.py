@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 
 """
 It pull (and will put) network data from (and to) archives.
@@ -15,7 +16,7 @@ else:
 import zipfile
 import os
 import igraph
-import system
+from . import system
 
 baseurls = (
         "http://www.arek.uni-obuda.hu/cxnet/deb_network/",

@@ -28,7 +28,10 @@ try:
 except ImportError:
     linux_distribution = None
 import platform
-import pylab
+try:
+    import pylab
+except ImportError:
+    print("pylab cannot be imported. python-matplotlib is installed?")
 from . import tools
 from .tools import OUT, IN, ALL
 from . import powerlaw

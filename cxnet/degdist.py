@@ -29,7 +29,7 @@ from .tools import OUT, IN, ALL
 from . import powerlaw
 
 #split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
-split = lambda List: zip(*List)
+split = lambda List: list(zip(*List))
 
 def logarithmic_binning(dd, l=1, mult=2):
     if not isinstance(dd[0], tuple):
@@ -94,7 +94,7 @@ class DegreeDistribution:
         if isinstance(network_or_degree_list, (tuple, list, dict)):
             self.deg = network_or_degree_list
             for d in self.deg:
-                assert isinstance(d, (int, long)) and d >= 0
+                assert isinstance(d, int) and d >= 0
             network = None
         else:
             network = network_or_degree_list
@@ -113,7 +113,7 @@ class DegreeDistribution:
                     }[self.direction]
 
         if isinstance(self.deg, dict):
-            self.deg = self.deg.values()
+            self.deg = list(self.deg.values())
 
         self.index, self.texindex, self.degree_type = {
                 ALL: ("",     "",       "plain degree"),
@@ -210,7 +210,7 @@ class DegreeDistribution:
 
         assert isinstance(k_min, (float, int)) and k_min > 0
         deg = [k for k in self.deg if k > k_min]
-        summa = sum(map(lambda x: log(x/k_min), deg))
+        summa = sum(log(k/k_min) for k in deg)
         n = len(deg)
         gamma = 1 + n/summa
         sigma = sqrt(n+1) / summa
