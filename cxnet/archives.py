@@ -135,8 +135,8 @@ def get_filepath(filename):
                 return os.path.join(netdata_directory, 'netdata', fn)
     archive_names = get_archive_name(filename)
     if archive_names:
-        print("Downloading datafiles...")
         archive_name, fn = archive_names[0]
+        print("Downloading datafiles from '{0}'...".format(archive_name))
         get_netdata(archive_name)
         return os.path.join(netdata_directory, 'netdata', '{0}.gml'.format(fn))
     else:
@@ -210,7 +210,7 @@ Use one of them:""")
         url = "{0}{1}".format(baseurl, zipfile_name)
         stored_zipfile = os.path.join("netdata_zip", zipfile_name)
         urllib.urlretrieve(url, stored_zipfile)
-        print("{0:2}/{1}. {2}".format(i, len(networks), zipfile_name), end=": ")
+        print("{0:2}/{1} {2}".format(i, len(networks), zipfile_name), end=": ")
         if unzip:
             try:
                 zf = zipfile.ZipFile(stored_zipfile)
@@ -226,11 +226,6 @@ Use one of them:""")
                     f.close()
     os.chdir(actual_dir)
 
-
-def put_debnetdata():
-    """Put the data of debian package dependency network into the archive.
-    """
-    print("""Send them to Arpad Horvath <horvath.arpad@arek.uni-obuda.hu>.""")
 
 def get_netdata_directory():
     """Try to find the netdata directory.
