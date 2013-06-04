@@ -135,9 +135,12 @@ def get_filepath(filename):
                 return os.path.join(netdata_directory, 'netdata', fn)
     archive_names = get_archive_name(filename)
     if archive_names:
-        print("I will download datafiles.")
-        get_netdata(archive_names[0])
-    return os.path.join(netdata_directory, 'netdata', '{0}.gml'.format(fn))
+        print("Downloading datafiles...")
+        archive_name, fn = archive_names[0]
+        get_netdata(archive_name)
+        return os.path.join(netdata_directory, 'netdata', '{0}.gml'.format(fn))
+    else:
+        print("There is no datafile that starts with '{0}'.".format(filename))
 
 def get_netdata(archive_name=None, unzip=True, path=system.rc_dir()):
     """Get network data from archives.
@@ -201,13 +204,13 @@ Use one of them:""")
         pass # directories exists
 
     baseurls, networks = network_archives[archive_name]
-    for net in networks:
+    for i, net in enumerate(networks, 1):
         zipfile_name = "%s.zip" % net
         baseurl=baseurls[0]
-        url = "%s%s" % (baseurl, zipfile_name)
+        url = "{0}{1}".format(baseurl, zipfile_name)
         stored_zipfile = os.path.join("netdata_zip", zipfile_name)
         urllib.urlretrieve(url, stored_zipfile)
-        print(zipfile_name, end=": ")
+        print("{0:2}/{1}. {2}".format(i, len(networks), zipfile_name), end=": ")
         if unzip:
             try:
                 zf = zipfile.ZipFile(stored_zipfile)
