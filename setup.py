@@ -37,7 +37,7 @@ options = dict(
 
     author = 'Arpad Horvath',
     author_email = 'horvath.arpad.szfvar@gmail.com',
-    url = 'http://www.arek.uni-obuda.hu/cxnet/doc/html',
+    url = 'http://django.arek.uni-obuda.hu/cxnet/doc',
 
     #package_dir = {'igraph': 'igraph'},
     packages = ['cxnet' ], #, 'oldmfng', 'network_evolution'],
