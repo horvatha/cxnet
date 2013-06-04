@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from __future__ import absolute_import
 
 """
 The basic tools for the cxnet.
@@ -12,8 +13,10 @@ import collections
 import contextlib
 import os
 import numpy
-import decorators
 import inspect
+import sys
+PY3 = sys.version > '3'
+from . import decorators
 
 OUT, IN, ALL = 1, 2, 3
 WEAK, STRONG = 1, 2

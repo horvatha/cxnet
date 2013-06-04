@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import pylab
+try:
+    import pylab
+except ImportError:
+    pass
 
 def plot(exponent, xmax, xmin=1, coeff=1, num=1000, variable_name="k", **kwargs):
     """Plot power-law function.
