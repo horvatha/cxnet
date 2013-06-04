@@ -45,12 +45,12 @@ class Network(networkx.DiGraph):
         if pkg_name not in self:
             find = self.cxfind(pkg_name)
             if len(find) == 1:
-                print """There is no package name %s.\nI will use %s instead.""" %\
-                      (pkg_name, find[0])
+                print("""There is no package name %s.\nI will use %s instead.""" %\
+                      (pkg_name, find[0]))
                 pkg_name = find[0] 
             else:
-                print """There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
-                        "\n ".join(find)
+                print("""There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
+                        "\n ".join(find))
                 return []
         subgraph = networkx.ego_graph(self, pkg_name, undirected=1)
 
@@ -120,7 +120,7 @@ def debnetwork():
     cdn = CommonDebNetwork()
     if not cdn.has_purged_edges:
         cdn.purge_edges()
-    print "Transforming to networkx."
+    print("Transforming to networkx.")
     debnet=Network()
     debnet.add_nodes_from(cdn.vertices)
     debnet.add_edges_from(cdn.edges)
