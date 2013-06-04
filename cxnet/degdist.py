@@ -245,12 +245,12 @@ class DegreeDistribution:
             K.append(k)
             G.append(g)
             S.append(s)
-        print "%f <= gamma%s <= %f" % (min(G), self.index, max(G))
+        print("{0:f} <= gamma{1} <= {2:f}".format(min(G), self.index, max(G)))
         p = pylab.errorbar(K, G, yerr=S)
         pylab.xlabel("k_min")
-        pylab.ylabel("gamma%s" % self.index)
-        pylab.title("The dependence from k_min of the exponent (%s)" % \
-                self.degree_type)
+        pylab.ylabel("gamma{0}".format(self.index))
+        pylab.title("The dependence from k_min of the exponent ({0})".format(
+                self.degree_type))
         #pylab.gca().set_yscale("log")
         #pylab.gca().set_xscale("log")
         pylab.savefig(file)
@@ -305,7 +305,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
         if plot is None:
             plot=pylab.plot
@@ -348,7 +348,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
 
         if "label" not in kwargs:
@@ -380,7 +380,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
         with_marker = kwargs.pop("with_marker", False)
         with_powerlaw = kwargs.pop("with_powerlaw", False)
@@ -462,7 +462,7 @@ The result of the first two examples are the same.
             probabilities, division_points = logarithmic_binning(self.dd, l=1, mult=2)
             mean_degrees = [sqrt(division_points[i]*division_points[i+1])
                               for i in range(len(probabilities))]
-            dd_smeared =  zip(division_points[:-1], division_points[1:], mean_degrees, probabilities)
+            dd_smeared =  list(zip(division_points[:-1], division_points[1:], mean_degrees, probabilities))
         elif self.binning == "ondemand":
             if len(self.dd) == 1:
                 dd_smeared = self.dd
@@ -484,7 +484,7 @@ The result of the first two examples are the same.
                     for i in range(len(self.dd))
                     ]
         else:
-            print "There is no binning called '%s'" % self.binning
+            print("There is no binning called '{0}'".format(self.binning))
             return
 
         self.dd_smeared = dd_smeared
@@ -558,7 +558,7 @@ if __name__ == "__main__":
     dd = DegreeDistribution(g)
     dd.summary()
     #dd.summary("info.txt")
-    print dd.exponent()
+    print(dd.exponent())
     dd.cumulative_plot(with_powerlaw=True)
     pylab.legend()
     pylab.savefig("tmp_cumulative.png")

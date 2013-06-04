@@ -3,21 +3,10 @@ from __future__ import absolute_import
 import os
 debug = False
 
-# Set the graph_module.
-cxnetrc=os.path.expanduser("~/.cxnetrc.py")
-if os.path.isfile(cxnetrc):
-    if debug:
-        print("""I have found an rc file: {0}.""".format(cxnetrc))
-    execfile(cxnetrc)
-if "graph_module" not in dir():
-    graph_module = "igraph"
-    if debug:
-        print("""The graph_module was not set in the rc file. I try to use "igraph".""")
-elif graph_module not in ["networkx", "igraph"]:
-    raise ValueError("""The graph_module in the rc file is not correct. Choose "igraph" or "networkx", please.""")
-else:
-    print("""The graph_module was set in the rc file to \"%s\".""" % graph_module)
-
+graph_module = "igraph"
+#TODO What to do with rc file?
+# In commit 920fdddcbe23 there were rcfile handling, but I could not handle
+# with PY3 and PY2 parallel.
 
 # Import useful things from the choosen module.
 if graph_module == "igraph":
