@@ -16,7 +16,7 @@ You can not create deb dependency network.""")
 else:
     from cxnet.debnetworkc import PkgInfo
     from cxnet.debnetworkc import TYPES
-from cxnet.archives import get_netdata, put_debnetdata, get_archive_name
+from cxnet.archives import get_netdata, get_archive_name
 
 from cxnet.degdist import DegreeDistribution
 from time import strftime, gmtime

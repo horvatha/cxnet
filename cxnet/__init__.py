@@ -125,7 +125,7 @@ You can try:
 
 # Some classes and functions useful for both graph modules.
 from .degdist import DegreeDistribution, split
-from .archives import get_netdata, put_debnetdata
+from .archives import get_netdata
 from .tools import vertex_colors
 
 if __name__ == "__main__":
