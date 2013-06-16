@@ -465,7 +465,8 @@ The result of the first two examples are the same.
             dd_smeared =  list(zip(division_points[:-1], division_points[1:], mean_degrees, probabilities))
         elif self.binning == "ondemand":
             if len(self.dd) == 1:
-                dd_smeared = self.dd
+                #TODO is there a better solution?
+                dd_smeared  = [(x-.5, x+.5, x, y) for x, y in self.dd]
             else:
                 inner_division_points = [sqrt(x[i] * x[i+1])
                         for i in range(len(self.dd) - 1)]
