@@ -18,7 +18,7 @@ class DebNetworkFunction(unittest.TestCase):
         types = (
                 ("vim", 0),
                 ("nano", 0),
-                ("firefox", 0),
+                ("libc6", 0),
                 ("editor", 1),
                 ("www-browser", 1),
                 )
