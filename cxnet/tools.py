@@ -18,6 +18,16 @@ import sys
 PY3 = sys.version > '3'
 from . import decorators
 
+def is_x_running():
+    """On Linux determine whether X-window is running."""
+    assert sys.platform.startswith("linux")
+    pids= [pid for pid in os.listdir('/proc') if pid.isdigit()]
+    for pid in pids:
+        readed = open(os.path.join('/proc', pid, 'cmdline'), 'rb').read()
+        if readed.startswith("/usr/bin/X"):
+            return True
+    return False
+
 OUT, IN, ALL = 1, 2, 3
 WEAK, STRONG = 1, 2
 vertex_colors = ['blue', 'fuchsia', 'aqua', 'grey', 'maroon', 'olive',
