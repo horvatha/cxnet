@@ -61,7 +61,7 @@ class DirectedNetwork(unittest.TestCase):
             dd = cxnet.DegreeDistribution(self.net, mode=dircode)
             self.assertEqual(dd.cumulative_distribution(), self.known_values[dircode][2])
 
-    def test_cumulative_distribution(self):
+    def test_exponent(self):
         "The value and sigma of the exponent should be correct."
         for dircode in self.known_values:
             dd = cxnet.DegreeDistribution(self.net, mode=dircode)
@@ -70,12 +70,21 @@ class DirectedNetwork(unittest.TestCase):
 class Creation(unittest.TestCase):
     """Tests the creation of DegreeDistribution method."""
 
+    known_values =  (
+            # (deg, dd, n_0)
+            ([1,1,2,2,3], [(1,.4), (2,.4), (3,.2)], 0),
+            ([1,1,0,0,3], [(1,.4), (3,.2)], 2),
+            ([3]*5, [(3,1.0)], 0),
+            ([3]*5 + [0]*5, [(3,0.5)], 5),
+            )
+
     # Test for success.
     def testdd(self):
         "dd should be the given list"
-        dd = cxnet.DegreeDistribution([1,1,2,2,3])
-        output = [(1,.4), (2,.4), (3,.2)]
-        self.assertEqual(output, dd.dd)
+        for deg, result, n_0 in self.known_values:
+            dd = cxnet.DegreeDistribution(deg)
+            self.assertEqual(result, dd.dd)
+            self.assertEqual(n_0, dd.n_0)
 
     # Test for failure.
     def testBadDegreeList(self):
@@ -85,8 +94,8 @@ class Creation(unittest.TestCase):
 
 
 # Test for success.
-class DegdistlistMethod(unittest.TestCase):
-    """Tests the degdistlist method."""
+class ToListMethod(unittest.TestCase):
+    """Tests the to_list method."""
 
     input_output_pairs = [
             ([0,0,0,0],   [1]),
@@ -101,7 +110,7 @@ class DegdistlistMethod(unittest.TestCase):
         for input_, output in self.input_output_pairs:
             n = len(output)
             dd = cxnet.DegreeDistribution(input_)
-            ddlist = dd.degdistlist()
+            ddlist = dd.to_list()
             self.assertEqual(len(ddlist), n)
             for i in range(n):
                 self.assertAlmostEqual(output[i], ddlist[i])

@@ -125,7 +125,7 @@ class DegreeDistribution:
 
         self.dd0=[(i, j) for i, j in enumerate(numpy.bincount(self.deg))]
         self.n_0 = self.dd0[0][1]
-        self.dd0=[(i, j) for i, j in self.dd0 if i > 0 and j > 0]
+        self.dd0=[(i, j) for i, j in self.dd0[1:] if j > 0]
         self.number_of_vertices = len(self.deg)
         self.dd=[(i, j/self.number_of_vertices) for i, j in self.dd0]
 
@@ -497,6 +497,13 @@ The result of the first two examples are the same.
             return
         self.binning = binning
         self.bin_smearing()
+
+    def to_list(self):
+        ddlist = [0] * (self.max_deg + 1)
+        ddlist[0] = self.n_0 / self.number_of_vertices
+        for k, prob in self.dd:
+            ddlist[k] = prob
+        return ddlist
 
 #TODO I think it is half-ready.
 class PowerLawDistribution:
