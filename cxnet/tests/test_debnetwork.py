@@ -136,15 +136,48 @@ class NetworkSimplify(unittest.TestCase):
             self.assertEqual(self.net.vcount(), vcount)
             self.assertEqual(self.net.ecount(), ecount)
 
+class ToNetworkX(unittest.TestCase):
+    """to_networkx function"""
+    import networkx as nx
+    known_values = {
+            True: (
+                ([(0,1), (1,2), (2,3), (0,2), (0,3)], [nx.DiGraph] , [nx.MultiDiGraph]),
+                ([(0,0), (1,2), (2,3), (0,2), (0,3)], [nx.DiGraph] , [nx.MultiDiGraph]), # with loop
+                ([(0,1), (1,2), (1,2), (0,1), (0,2)], [nx.MultiDiGraph] , []),
+                ),
+            False: (
+                ([(0,1), (1,2), (2,3), (0,2), (0,3)], [nx.Graph] , [nx.MultiGraph]),
+                ([(0,0), (1,2), (2,3), (0,2), (0,3)], [nx.Graph] , [nx.MultiGraph]), # with loop
+                ([(0,1), (1,2), (2,1), (1,0), (0,2)], [nx.MultiGraph] , [nx.MultiDiGraph]),
+                ([(0,1), (1,2), (1,2), (0,1), (0,2)], [nx.MultiGraph] , [nx.MultiDiGraph]),
+                ),
+            }
+
+    def test_networkx_types(self):
+        "The types created by to_networkx should be correct."
+        for directed in [True, False]:
+            #print "Directed", directed
+            for edges, is_in, not_in in self.known_values[directed]:
+                #print edges
+                net = cxnet.Network(4, edges, directed)
+                nxnet = net.to_networkx()
+                for class_ in is_in:
+                    self.assertIsInstance(nxnet, class_)
+                for class_ in not_in:
+                    self.assertNotIsInstance(nxnet, class_)
+
 
 def suite():
     debnetfunction_suite = unittest.makeSuite(DebNetworkFunction)
     fromgml_suite = unittest.makeSuite(DebNetworkFromGML)
     simplify_suite = unittest.makeSuite(NetworkSimplify)
+    to_networkx_suite = unittest.makeSuite(ToNetworkX)
     return unittest.TestSuite([
         debnetfunction_suite,
         fromgml_suite,
-        simplify_suite])
+        simplify_suite,
+        to_networkx_suite,
+        ])
 
 def test():
     runner = unittest.TextTestRunner()

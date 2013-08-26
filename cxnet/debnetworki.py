@@ -195,7 +195,9 @@ class Network(igraph.Graph):
             if isinstance(revision, float) and not math.isnan(revision):
                 self["revision"] = int(revision)
 
-        del self.vs["id"]
+        #TODO I do not know why is it here and where is vs["id"] created.
+        if "id" in self.vs.attributes():
+            del self.vs["id"]
         integer_attributes = (
                 zip(("type", "filesize"), [self.vs]*3) +
                 zip(("type",), [self.es])
@@ -445,10 +447,15 @@ class Network(igraph.Graph):
             print("There is no module named networkx.\n"
                  "Install it if you want to convert igraph.Graph into networkx.(Di)Graph.")
             return
-        if self.is_directed():
-            net=networkx.DiGraph()
-        else:
-            net=networkx.Graph()
+        graph_type = {
+                # (is_directed, is_multiple)
+                (True, True): networkx.MultiDiGraph,
+                (True, False): networkx.DiGraph,
+                (False, True): networkx.MultiGraph,
+                (False, False): networkx.Graph,
+                }
+        is_multiple = any(self.is_multiple())
+        net = graph_type[(self.is_directed(), is_multiple)]()
         edges = [(names[edge.source], names[edge.target]) for edge in self.es]
         net.add_edges_from(edges)
         return net
@@ -696,7 +703,7 @@ def load(filename):
         assert filepath.endswith(".gml") or filepath.endswith(".graphmlz")
         net = Network.Read(filepath)
         net.normalize()
-        net["file"] = filename
+        net["file"] = os.path.basename(filepath)
         if "Description" not in net.attributes():
             infofile=open(os.path.splitext(filepath)[0] + ".txt")
             net["Description"] = "".join(infofile.readlines())
