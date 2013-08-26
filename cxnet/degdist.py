@@ -100,11 +100,16 @@ class DegreeDistribution:
             network = network_or_degree_list
             # We can use NetworkX or IGraph modules.
             if "adj" in dir(network): # NetworkX
-                self.deg = {
-                        IN: network.in_degree(),
-                        OUT: network.out_degree(),
-                        ALL: network.degree()
-                    }[self.direction]
+                if self.direction == ALL:
+                    self.deg = network.degree()
+                elif "in_degree" not in dir(network):
+                    raise ValueError("Direction in an undirected network must be ALL.")
+                else:
+                    self.deg = {
+                            IN: network.in_degree(),
+                            OUT: network.out_degree(),
+                            #ALL: network.degree()
+                        }[self.direction]
             else:
                 self.deg = {
                         IN: network.indegree(),

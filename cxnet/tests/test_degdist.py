@@ -7,7 +7,7 @@ import cxnet
 from cxnet import OUT, IN, ALL
 import unittest
 
-class DirectedNetwork(unittest.TestCase):
+class Direction(unittest.TestCase):
     "Tests for network degdist."
 
     def setUp(self):
@@ -107,6 +107,7 @@ class ToListMethod(unittest.TestCase):
             ]
 
     def testReturnValue(self):
+        "to_list should return the correct list"
         for input_, output in self.input_output_pairs:
             n = len(output)
             dd = cxnet.DegreeDistribution(input_)
@@ -115,6 +116,39 @@ class ToListMethod(unittest.TestCase):
             for i in range(n):
                 self.assertAlmostEqual(output[i], ddlist[i])
 
+
+class NetworkX(unittest.TestCase):
+    "Tests for working with the networkx module."
+
+    def setUp(self):
+        import networkx as nx
+        self.net = nx.barabasi_albert_graph(100, 3)
+        self.dirnet = nx.erdos_renyi_graph(100, .2, directed=1)
+        self.direction_dict =  {
+                OUT: ("out", "OUT"),
+                IN:  ("in", "IN"),
+                ALL: (None, "All", "all"),
+            }
+
+    def testCreateDegree(self):
+        "creation whould work with undirected network"
+        dd = cxnet.degdist.DegreeDistribution(self.net)
+        self.assertGreater(self.net.order()+1, dd.n_0)
+        self.assertGreater(self.net.order(), dd.max_deg)
+
+    def testErrors(self):
+        "mode 'in' and 'out' should fail with undirected network"
+        for mode in ["in", "out", "IN", "OUT"]:
+            self.assertRaises(ValueError,
+                    cxnet.degdist.DegreeDistribution,
+                    self.net, mode=mode)
+
+    def testCreateInDegree(self):
+        "creation should work with directed network"
+        for mode in ["in", "out", "IN", "OUT", "all", "ALL"]:
+            dd = cxnet.degdist.DegreeDistribution(self.dirnet, mode=mode)
+            self.assertGreater(self.dirnet.order()+1, dd.n_0)
+            self.assertGreater(self.dirnet.order(), dd.max_deg)
 
 if __name__ == "__main__":
         unittest.main()
