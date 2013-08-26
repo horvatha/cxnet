@@ -4,7 +4,7 @@
 """Tests for the module called tools."""
 
 from cxnet.tools import (average_values, decorator_generator,
-                    StandardValue, default_value)
+                    StandardValue, default_value, count_natural)
 import unittest
 
 class TestStandardValue(unittest.TestCase):
@@ -205,6 +205,17 @@ class AverageValues(unittest.TestCase):
         for parameters, errortext in bad_parameters:
             self.assertRaisesRegexp(AssertionError, errortext, average_values, *parameters)
 
+class CountNatural(unittest.TestCase):
+    """Tests the count_natural function."""
+
+    def test_known_results(self):
+        "The known result should agree."
+        known_results = (
+                ( [0,0,1,2,4], [2,1,1,0,1] ),
+                ( [2,2,2,5], [0,0,3,0,0,1] ),
+            )
+        for L, result in known_results:
+            self.assertEqual(count_natural(L), result)
 
 if __name__ == "__main__":
         unittest.main()

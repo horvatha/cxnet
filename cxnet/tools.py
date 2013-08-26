@@ -195,3 +195,17 @@ def decorator_generator(param, values, default=None):
 
 directions = {"out": OUT, "in":IN, "all":ALL}
 direction = decorator_generator("mode", directions, default=ALL)
+
+# With this the distribution can be created. It can replace numpy.bincount.
+# It allows to sort the vertices by degree.
+# See Cormen - Leiserson - Rivest - Stein: Introduction to Algorithms
+def count_natural(L):
+    """Counts the appearance of each values of a list of natural numbers.
+
+    Returns:
+    The list of number of appearance from 0 to max(L).
+    """
+    count = [0] * (max(L) + 1)
+    for i in L:
+        count[i] += 1
+    return count
