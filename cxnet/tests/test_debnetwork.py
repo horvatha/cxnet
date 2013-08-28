@@ -69,6 +69,14 @@ class DebNetworkFromGML(unittest.TestCase):
         for plot in "pdf svg png".split():
             self.net.cxneighborhood("nn", plot=plot)
 
+class Neighborhood(unittest.TestCase):
+    """net.simplify(nodes, edges) function"""
+
+    def test_return_network(self):
+        net = cxnet.Network.Formula("a->b->c b->d->e")
+        subnetwork = net.cxneighborhood("b", plot=False, return_network=True)
+        self.assertEqual(subnetwork.vcount(), 4)
+
 class NetworkSimplify(unittest.TestCase):
     """net.simplify(nodes, edges) function"""
 
@@ -172,11 +180,13 @@ def suite():
     fromgml_suite = unittest.makeSuite(DebNetworkFromGML)
     simplify_suite = unittest.makeSuite(NetworkSimplify)
     to_networkx_suite = unittest.makeSuite(ToNetworkX)
+    neighborhood_suite = unittest.makeSuite(Neighborhood)
     return unittest.TestSuite([
         debnetfunction_suite,
         fromgml_suite,
         simplify_suite,
         to_networkx_suite,
+        neighborhood_suite,
         ])
 
 def test():

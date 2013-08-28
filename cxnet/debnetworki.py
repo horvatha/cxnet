@@ -241,6 +241,9 @@ class Network(igraph.Graph):
                 - If False, do not plot.
             **kwargs: dict
                 keywords to the plot command
+                An optional keyword argumentum can be return_network. It it is
+                True, the function returns subnetwork instead of vertex
+                sequence.
 
         Returns:
             Vertex sequence of the neighborhood.
@@ -258,6 +261,7 @@ class Network(igraph.Graph):
             <igraph.VertexSeq object at ...>
         """
 
+        return_network = kwargs.pop("return_network", False)
         if isinstance(pkg_name, int):
             ix = pkg_name
         else:
@@ -284,27 +288,28 @@ class Network(igraph.Graph):
         vs = self.vs(neighborhood)
         #TODO Should return with a subgraph, not with VertexSeq?
 
+        # Calculate coordiantes
+        shift = lambda y: 1 + curvature*math.cos(math.pi * y)
+        coords = [(0,0)]
+        if p:
+            delta = 1 / (len(p) - .99)
+            y=-0.5
+            for i in range(len(p)):
+                coords.append((-shift(y), y))
+                y += delta
+        if s:
+            delta = 1/(len(s)-.99)
+            y=-0.5
+            for i in range(len(s)):
+                coords.append((shift(y),y))
+                y+=delta
+        vs["coord"] = coords
+
         if plot:
             attributes = self.vs.attributes()
             if "color" not in attributes and "type" in attributes:
                 self.cxcolorize()
-            shift = lambda y: 1 + curvature*math.cos(math.pi * y)
-            coords = [(0,0)]
-            if p:
-                delta = 1 / (len(p) - .99)
-                y=-0.5
-                for i in range(len(p)):
-                    coords.append((-shift(y), y))
-                    y += delta
-            if s:
-                delta = 1/(len(s)-.99)
-                y=-0.5
-                for i in range(len(s)):
-                    coords.append((shift(y),y))
-                    y+=delta
-            vs["coord"] = coords
             subnetwork = vs.subgraph()
-            return_network = kwargs.pop("return_network", False)
             if kwargs.get("vertex_size") is None:
                 kwargs["vertex_size"] = max(500/max(len(p), len(s), 5), 8)
             if kwargs.get("margin") is None:
