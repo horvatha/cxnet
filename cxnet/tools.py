@@ -63,7 +63,10 @@ def average_values(x, y, x_min=None):
     assert len(x) == len(y), "x and y must have the same length"
     for xx in x:
         assert isinstance(xx, int), "x values must be integers"
-    pairs = [(xx, yy) for xx, yy in zip(x, y) if xx >= x_min]
+    if x_min is None:
+        pairs = list(zip(x, y))
+    else:
+        pairs = [(xx, yy) for xx, yy in zip(x, y) if xx >= x_min]
     for xx, yy in pairs:
         assert isinstance(yy, (int, float, complex)), "y values must contain integer, float and complex numbers"
     valuedict = collections.defaultdict(list)
