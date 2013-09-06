@@ -22,7 +22,6 @@ from cxnet.degdist import DegreeDistribution
 from time import strftime, gmtime
 #from os.path import getatime
 import os
-import operator
 try:
     from platform import linux_distribution
 except ImportError:
@@ -731,7 +730,10 @@ def indegree_list(*networks):
         indegrees in the order of the given networks.
 
     """
-    pkg_names = reduce(operator.or_, (set(net.vs["name"]) for net in networks))
+    pkg_names = set()
+    for net in networks:
+        pkg_names |= set(net.vs["name"])
+
     indegree_list = dict((pkg_name, []) for pkg_name in pkg_names)
     for network in networks:
         indegrees = dict(zip(network.vs["name"], network.indegree()))
