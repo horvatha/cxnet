@@ -198,8 +198,8 @@ class Network(igraph.Graph):
         if "id" in self.vs.attributes():
             del self.vs["id"]
         integer_attributes = (
-                zip(("type", "filesize"), [self.vs]*3) +
-                zip(("type",), [self.es])
+                list(zip(("type", "filesize"), [self.vs]*3)) +
+                list(zip(("type",), [self.es]))
                 )
         for attr, object_ in integer_attributes:
             if attr in object_.attributes():
