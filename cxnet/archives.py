@@ -234,12 +234,7 @@ Use one of them:""")
                 print(e.message)
             else:
                 print(", ".join(zf.namelist()))
-                #zf.extractall("netdata") # Not in older versions (2.5).
-                for name in zf.namelist():
-                    bites = zf.read(name)
-                    f = open(os.path.join("netdata", name), "w")
-                    f.write(bites)
-                    f.close()
+                zf.extractall("netdata") # Not in older versions (2.5).
     os.chdir(actual_dir)
 
 
