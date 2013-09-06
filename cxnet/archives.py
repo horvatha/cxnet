@@ -8,15 +8,30 @@ from __future__ import absolute_import
 It pull (and will put) network data from (and to) archives.
 """
 
-import urllib
-if "urlretrieve" in dir(urllib):
-    urlretrieve = urllib.urlretrieve
-else:
-    urlretrieve = urllib.request.urlretrieve
 import zipfile
 import os
 import igraph
 from . import system
+
+from .tools import PY3
+import urllib
+if PY3:
+    urlretrieve = urllib.request.urlretrieve
+    URLError = urllib.error.URLError
+    urlopen = urllib.request.urlopen
+else:
+    urlretrieve = urllib.urlretrieve
+    import urllib2
+    URLError = urllib2.URLError
+    urlopen = urllib2.urlopen
+
+def internet_on():
+    try:
+        response = urlopen('http://google.com', timeout=1)
+        return True
+    except URLError as err:
+        pass
+    return False
 
 baseurls = (
         "http://www.arek.uni-obuda.hu/cxnet/deb_network/",
@@ -210,7 +225,7 @@ Use one of them:""")
         baseurl=baseurls[0]
         url = "{0}{1}".format(baseurl, zipfile_name)
         stored_zipfile = os.path.join("netdata_zip", zipfile_name)
-        urllib.urlretrieve(url, stored_zipfile)
+        urlretrieve(url, stored_zipfile)
         print("{0:2}/{1} {2}".format(i, len(networks), zipfile_name), end=": ")
         if unzip:
             try:
