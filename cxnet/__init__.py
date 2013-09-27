@@ -128,6 +128,9 @@ from .degdist import DegreeDistribution, split
 from .archives import get_netdata
 from .tools import vertex_colors
 
+if True:
+    from .magyar import *
+
 if __name__ == "__main__":
     dn=debnetwork()
     dd=DegreeDistribution(dn)
