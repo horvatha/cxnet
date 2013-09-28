@@ -338,6 +338,13 @@ class Network(igraph.Graph):
         """
         return DegreeDistribution(self,**kwargs)
 
+    def cxrandomize(self, keep_degrees=False, **kwargs):
+        """Return a random network with the same number of nodes and edges."""
+        if not keep_degrees:
+            return self.Erdos_Renyi(self.vcount(), m=self.ecount(), **kwargs)
+        else:
+            return self.Degree_Sequence(self.degree(), **kwargs)
+
     def cxfind(self, namepart, verbosity=None):
         """Returns the ordered list of package names containing the given part.
 

@@ -174,6 +174,22 @@ class ToNetworkX(unittest.TestCase):
                 for class_ in not_in:
                     self.assertNotIsInstance(nxnet, class_)
 
+class Randomize(unittest.TestCase):
+    """cxrandomize function"""
+    net = cxnet.Network.Formula('a-b-c-d b-e-d')
+
+    def test_not_keep_degrees(self):
+        "cxrandomize should keep the number of nodes and edges"
+        randomnet = self.net.cxrandomize()
+        self.assertEqual(randomnet.vcount(), self.net.vcount())
+        self.assertEqual(randomnet.ecount(), self.net.ecount())
+
+    def test_keep_degrees(self):
+        "cxrandomize should work with keep_degrees."
+        randomnet = self.net.cxrandomize(True)
+        self.assertEqual(randomnet.vcount(), self.net.vcount())
+        self.assertEqual(randomnet.ecount(), self.net.ecount())
+        self.assertEqual(sorted(randomnet.degree()), sorted(self.net.degree()))
 
 def suite():
     debnetfunction_suite = unittest.makeSuite(DebNetworkFunction)
@@ -181,12 +197,14 @@ def suite():
     simplify_suite = unittest.makeSuite(NetworkSimplify)
     to_networkx_suite = unittest.makeSuite(ToNetworkX)
     neighborhood_suite = unittest.makeSuite(Neighborhood)
+    randomize_suite = unittest.makeSuite(Randomize)
     return unittest.TestSuite([
         debnetfunction_suite,
         fromgml_suite,
         simplify_suite,
         to_networkx_suite,
         neighborhood_suite,
+        randomize_suite,
         ])
 
 def test():
