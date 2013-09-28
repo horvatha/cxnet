@@ -338,6 +338,45 @@ class Network(igraph.Graph):
         """
         return DegreeDistribution(self,**kwargs)
 
+    def cxdegdist_plot(self, with_random=True, loglog=None,
+            plotargs={}, randomplotargs={}, **kwargs):
+        """Plot the degree distribution of the network.
+
+        Parameters:
+            with_random:
+                plots the degree distribution of the random
+                counterpart as well.
+            loglog (boolean or None):
+                whether to use logarithmic scales on axes.
+                If None, it decides on the size of the network.
+            plotargs and randomplotargs:
+                the keyword arguments for the plot functions
+            kwargs:
+                parameters to the DegreeDistribution class
+                Eg. mode {"in", "out", None}
+
+        Returns:
+            dd: DegreeDistribution class object (see help(dd) )
+        """
+        dd = self.cxdegdist(**kwargs)
+        if loglog is None:
+            loglog = True if dd.max_deg > 100 else False
+        plot = dd.bar_loglog if loglog else dd.bar_plot
+        binning = "log" if loglog else "all"
+        dd.set_binning(binning)
+        plotargs['color'] = plotargs.get('color') or 'red'
+        plot(**plotargs)
+        if with_random:
+            rnet = self.cxrandomize()
+            rdd = rnet.cxdegdist(**kwargs)
+            rdd.set_binning(binning)
+            plot = rdd.bar_loglog if loglog else rdd.bar_plot
+            randomplotargs['color'] = randomplotargs.get('color') or 'yellow'
+            randomplotargs['alpha'] = randomplotargs.get('alpha') or 0.5
+            plot(**randomplotargs)
+            pylab.legend(['original', 'random'])
+        return dd
+
     def cxrandomize(self, keep_degrees=False, **kwargs):
         """Return a random network with the same number of nodes and edges."""
         if not keep_degrees:
