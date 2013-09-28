@@ -98,12 +98,12 @@ class DegreeDistribution:
             network = None
         else:
             network = network_or_degree_list
+            if self.direction != ALL and not network.is_directed():
+                raise ValueError('Undirected networks must not have mode other than "all"')
             # We can use NetworkX or IGraph modules.
             if "adj" in dir(network): # NetworkX
                 if self.direction == ALL:
                     self.deg = network.degree()
-                elif "in_degree" not in dir(network):
-                    raise ValueError("Direction in an undirected network must be ALL.")
                 else:
                     self.deg = {
                             IN: network.in_degree(),
@@ -137,7 +137,7 @@ class DegreeDistribution:
         self.binning = kwargs.pop("binning", None)
         if self.binning is not None:
             self.bin_smearing()
-        self.labelfontsize=15
+        self.labelfontsize=18
         if kwargs:
             raise ValueError("kwargs must not have key(s): {0}".format(", ".join(kwargs.keys())))
 
@@ -165,9 +165,8 @@ class DegreeDistribution:
         if "label" not in kwargs:
             kwargs["label"] = "$P(k%s)$" % self.texindex
         p = pylab.loglog(x,y, **kwargs)
-        pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
-        pylab.ylabel("$P(k%s)$" % self.texindex, fontsize=self.labelfontsize)
-        pylab.title("Cumulative %s distribution" % self.degree_type)
+        self.set_label_title(ylabeltemplate='$P(k{0})$',
+                             titletemplate='Cumulative {0} distribution')
         if with_powerlaw:
             kwargs.pop("marker", None)
             kwargs.pop("label", None)
@@ -320,10 +319,7 @@ The result of the first two examples are the same.
             kwargs["label"] = "$p(k{0})$, {1} binned".format(
                                         self.texindex, self.binning)
         p = plot(x,y,".", **kwargs)
-        pylab.xlabel("$k%s$" % self.texindex, fontsize=self.labelfontsize)
-        pylab.ylabel("$p(k%s)$" % self.texindex, fontsize=self.labelfontsize)
-        title = "%s distribution" % self.degree_type
-        pylab.title(title.capitalize())
+        self.set_label_title()
         if with_powerlaw:
             for arg in ["marker", "label"]:
                 kwargs.pop(arg, None)
@@ -372,6 +368,17 @@ The result of the first two examples are the same.
         pylab.show()
         return p
 
+    def set_label_title(self, **kwargs):
+        "Set xlabel, ylabel and title for plots."
+        xlabeltemplate = kwargs.pop('xlabeltemplate', '$k{0}$')
+        ylabeltemplate = kwargs.pop('ylabeltemplate', '$p(k{0})$')
+        titletemplate = kwargs.pop('titletemplate', '{0} distribution')
+        pylab.xlabel(xlabeltemplate.format(self.texindex), fontsize=self.labelfontsize)
+        pylab.ylabel(ylabeltemplate.format(self.texindex), fontsize=self.labelfontsize)
+        title = titletemplate.format(self.degree_type)
+        pylab.title(title.capitalize(), fontsize=self.labelfontsize)
+        pylab.tight_layout()
+
     def bar_plot(self, xscale="linear", yscale="linear", **kwargs):
         """Plot the degree distribution with bars.
 
@@ -407,6 +414,7 @@ The result of the first two examples are the same.
                 **kwargs)
         pylab.gca().set_yscale(yscale)
         pylab.gca().set_xscale(xscale)
+        self.set_label_title()
         kwargs["markerfacecolor"] = kwargs.get("markerfacecolor", "gold")
         kwargs["marker"] = kwargs.get("marker", "D")
         if with_marker:
