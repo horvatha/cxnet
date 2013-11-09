@@ -3,20 +3,17 @@
 
 """Unittest for cxnet gml import."""
 
+from __future__ import absolute_import
+
 import cxnet
 import os
 import shutil
 import unittest
-import urllib2
+from .tools import internet_on
 
-
-def internet_on():
-    try:
-        response = urllib2.urlopen('http://google.com', timeout=1)
-        return True
-    except urllib2.URLError as err:
-        pass
-    return False
+import sys
+print("{0} is not updated for the new version.".format(__file__))
+sys.exit()
 
 
 class DebNetwork(unittest.TestCase):

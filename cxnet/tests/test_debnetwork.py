@@ -177,6 +177,7 @@ class ToNetworkX(unittest.TestCase):
 class Randomize(unittest.TestCase):
     """cxrandomize function"""
     net = cxnet.Network.Formula('a-b-c-d b-e-d')
+    dirnet = cxnet.Network.Formula('a>b>c>d b>e>d')
 
     def test_not_keep_degrees(self):
         "cxrandomize should keep the number of nodes and edges"
@@ -186,10 +187,21 @@ class Randomize(unittest.TestCase):
 
     def test_keep_degrees(self):
         "cxrandomize should work with keep_degrees."
-        randomnet = self.net.cxrandomize(True)
-        self.assertEqual(randomnet.vcount(), self.net.vcount())
-        self.assertEqual(randomnet.ecount(), self.net.ecount())
-        self.assertEqual(sorted(randomnet.degree()), sorted(self.net.degree()))
+        net = self.net
+        randomnet = net.cxrandomize(True)
+        self.assertEqual(randomnet.vcount(), net.vcount())
+        self.assertEqual(randomnet.ecount(), net.ecount())
+        self.assertEqual(sorted(randomnet.degree()), sorted(net.degree()))
+
+    def test_keep_degrees_directed(self):
+        "cxrandomize should work with keep_degrees."
+        net = self.dirnet
+        randomnet = net.cxrandomize(True)
+        self.assertTrue(randomnet.is_directed())
+        self.assertEqual(randomnet.vcount(), net.vcount())
+        self.assertEqual(randomnet.ecount(), net.ecount())
+        self.assertEqual(sorted(randomnet.indegree()), sorted(net.indegree()))
+        self.assertEqual(sorted(randomnet.outdegree()), sorted(net.outdegree()))
 
 def suite():
     debnetfunction_suite = unittest.makeSuite(DebNetworkFunction)
