@@ -647,56 +647,61 @@ class Network(igraph.Graph):
                     )
         return plot
 
+    @classmethod
+    def debnetwork(cls):
+        """Creates the network of deb packages in Linux distributions using deb packages.
+
+        Returns:
+            A :class:`cxnet.Network` instance.
+
+        It needs the `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_ package installed.
+        """
+        cdn = CommonDebNetwork()
+        print("Transforming to numbered graph.")
+        idgen = igraph.UniqueIdGenerator() # igraph/datatypes.py
+        edgelist = [(idgen[x], idgen[y]) for x, y, t in cdn.edges]
+        [idgen[vertex] for vertex in cdn.vertices]
+        package_names = idgen.values()
+        print("Transforming to igraph.")
+        debnet = cls(len(package_names), edgelist, directed=True)
+        debnet.normalized = True
+        debnet.es["type"] = [_type for _, _, _type in cdn.edges]
+        debnet.sources_list = cdn.sources_list
+        debnet.vs["name"] = idgen.values()
+        for package_name in cdn.vertices:
+             package_data = cdn.vertices[package_name]
+             if package_data:
+                 vertex = debnet.vs[idgen[package_name]]
+                 (vertex["priority"],
+                 vertex["filesize"],
+                 vertex["section"],
+                 vertex["summary"],
+                 vertex["version"],
+                 vertex["architecture"],
+                 ) = package_data
+        print("Setting vertex types.")
+        debnet.vs["type"] = 0
+        for extra in cdn.extra_vertices():
+            debnet.vs[idgen[extra]]["type"] = 1
+        debnet.type = "igraph"
+        debnet["name"] = "software package dependency network of Linux"
+        if cdn.revision:
+            debnet["revision"] = cdn.revision
+        debnet["hostname"] = platform.node()
+        debnet["URL"] = "http://django.arek.uni-obuda.hu/cxnet"
+        debnet["sources_list"] = cdn.sources_list
+        debnet["architecture"], debnet["foreign_architectures"] = \
+                ['\n'.join(archs) for archs in get_architectures()]
+        debnet["Description"] = "Dependency network of Linux software packages"
+        debnet["package_format"] = "deb"
+        debnet["update_time"] = strftime("%Y-%m-%d %H:%M:%S GMT", get_update_time())
+        debnet["Author"] = "Arpad Horvath"
+        debnet["Creator"] = "cxnet"
+        return debnet
+
 def debnetwork():
-    """Creates the network of deb packages in Linux distributions using deb packages.
-
-    Returns:
-        A :class:`cxnet.Network` instance.
-
-    It needs the `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_ package installed.
-    """
-    cdn = CommonDebNetwork()
-    print("Transforming to numbered graph.")
-    idgen = igraph.UniqueIdGenerator() # igraph/datatypes.py
-    edgelist = [(idgen[x], idgen[y]) for x, y, t in cdn.edges]
-    [idgen[vertex] for vertex in cdn.vertices]
-    package_names = idgen.values()
-    print("Transforming to igraph.")
-    debnet = Network(len(package_names), edgelist, directed=True)
-    debnet.normalized = True
-    debnet.es["type"] = [_type for _, _, _type in cdn.edges]
-    debnet.sources_list = cdn.sources_list
-    debnet.vs["name"] = idgen.values()
-    for package_name in cdn.vertices:
-         package_data = cdn.vertices[package_name]
-         if package_data:
-             vertex = debnet.vs[idgen[package_name]]
-             (vertex["priority"],
-             vertex["filesize"],
-             vertex["section"],
-             vertex["summary"],
-             vertex["version"],
-             vertex["architecture"],
-             ) = package_data
-    print("Setting vertex types.")
-    debnet.vs["type"] = 0
-    for extra in cdn.extra_vertices():
-        debnet.vs[idgen[extra]]["type"] = 1
-    debnet.type = "igraph"
-    debnet["name"] = "software package dependency network of Linux"
-    if cdn.revision:
-        debnet["revision"] = cdn.revision
-    debnet["hostname"] = platform.node()
-    debnet["URL"] = "http://django.arek.uni-obuda.hu/cxnet"
-    debnet["sources_list"] = cdn.sources_list
-    debnet["architecture"], debnet["foreign_architectures"] = \
-            ['\n'.join(archs) for archs in get_architectures()]
-    debnet["Description"] = "Dependency network of Linux software packages"
-    debnet["package_format"] = "deb"
-    debnet["update_time"] = strftime("%Y-%m-%d %H:%M:%S GMT", get_update_time())
-    debnet["Author"] = "Arpad Horvath"
-    debnet["Creator"] = "cxnet"
-    return debnet
+    return Network.debnetwork()
+debnetwork.__doc__ = Network.debnetwork.__doc__
 
 def get_architectures():
     """Get the architecture and foreign architectures."""
