@@ -5,12 +5,14 @@
 
 import functools
 
+
 def decorator(d):
     "Make function d a decorator: d wraps a function fn."
     def _d(fn):
         return functools.update_wrapper(d(fn), fn)
     return _d
 decorator = decorator(decorator)
+
 
 @decorator
 def n_ary(f):
@@ -20,11 +22,13 @@ def n_ary(f):
         return x if not args else f(x, n_ary_f(*args))
     return n_ary_f
 
+
 @decorator
 def memo(f):
     """Decorator that caches the return value for each call to f(args).
     Then when called again with same args, we can just look it up."""
     cache = {}
+
     def _f(*args):
         try:
             return cache[args]
@@ -38,6 +42,7 @@ def memo(f):
     _f.cache = cache
     return _f
 
+
 @decorator
 def countcalls(f):
     "Decorator that makes the function count calls to it, in callcounts[f]."
@@ -48,26 +53,30 @@ def countcalls(f):
     return _f
 callcounts = {}
 
+
 @decorator
 def trace(f):
     indent = '   '
+
     def _f(*args, **kwargs):
         signature = '{0}({1})'.format(f.__name__, ', '.join(map(repr, args)))
         print('{0}--> {1}'.format(trace.level*indent, signature))
         trace.level += 1
         try:
             result = f(*args, **kwargs)
-            print('{0}<-- {1} == {2}'.format((trace.level-1)*indent,
-                                      signature, result))
+            print('{0}<-- {1} == {2}'.format(
+                (trace.level-1)*indent, signature, result))
         finally:
             trace.level -= 1
         return result
     trace.level = 0
     return _f
 
+
 def disabled(f):
     # Example: Use trace = disabled to turn off trace decorators
     return f
+
 
 @trace
 @memo
@@ -79,4 +88,5 @@ def fib(n):
         return fib(n-1) + fib(n-2)
 
 if __name__ == '__main__':
-    fib(6) #running this in the browser's IDE  will not display the indentations!
+    # running this in the browser's IDE  will not display the indentations!
+    fib(6)

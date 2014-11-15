@@ -12,25 +12,26 @@ import collections
 import contextlib
 import os
 import numpy
-import decorators
+from cxnet import decorators
 import inspect
 
 OUT, IN, ALL = 1, 2, 3
 WEAK, STRONG = 1, 2
-vertex_colors = ['blue', 'fuchsia', 'aqua', 'grey', 'maroon', 'olive',
+vertex_colors = [
+    'blue', 'fuchsia', 'aqua', 'grey', 'maroon', 'olive',
     'yellow', 'teal', 'navy', 'green', 'white', 'silver', 'red', 'lime',
     'orange', 'pink', 'gold']
 
 
-#@decorators.trace
+# @decorators.trace
 def average_values(x, y, x_min=None):
     """Return the average value for each x values.
 
     Parameters:
         x: sequence (list, tuple) of integers
             the x values
-        y: sequence (list, tuple) of numbers, numbers must be integers, floats or complex
-            the y values
+        y: sequence (list, tuple) of numbers, numbers must be integers,
+            floats or complex the y values
         x_min: None, int or float
             the minimal x values to take into account
 
@@ -46,13 +47,15 @@ def average_values(x, y, x_min=None):
          ((1, 2), (2.5, 4.5))
 
     """
-    assert x_min is None or isinstance(x_min, (int, float)), "x_min must be integer, float or None"
+    assert x_min is None or isinstance(x_min, (int, float)),\
+        "x_min must be integer, float or None"
     assert len(x) == len(y), "x and y must have the same length"
     for xx in x:
         assert isinstance(xx, int), "x values must be integers"
     pairs = [(xx, yy) for xx, yy in zip(x, y) if xx >= x_min]
     for xx, yy in pairs:
-        assert isinstance(yy, (int, float, complex)), "y values must contain integer, float and complex numbers"
+        assert isinstance(yy, (int, float, complex)),\
+            "y values must contain integer, float and complex numbers"
     valuedict = collections.defaultdict(list)
     for xx, yy in pairs:
         valuedict[xx].append(yy)
@@ -60,6 +63,7 @@ def average_values(x, y, x_min=None):
     if not pairs:
         return ((), ())
     return tuple(zip(*pairs))
+
 
 @contextlib.contextmanager
 def working_directory(path):
@@ -69,6 +73,7 @@ def working_directory(path):
         yield
     finally:
         os.chdir(cwd)
+
 
 @decorators.decorator
 def direction_old(f):
@@ -88,13 +93,15 @@ def direction_old(f):
         f(*args, **kwargs)
     return _f
 
+
 class StandardValue(object):
     def __init__(self, values, default=None):
         for key in values:
-            assert key.islower(), "The keys of values must be lower case strings."
+            assert key.islower(),\
+                "The keys of values must be lower case strings."
         self.values = values
         assert default in values.values() or default is None,\
-                "default must be in values.values() of must be None."
+            "default must be in values.values() of must be None."
         self.default = default
 
     def get(self, value):
@@ -104,8 +111,10 @@ class StandardValue(object):
             if self.default is not None:
                     return self.default
             else:
-                raise ValueError("It the value is None, there must be a default value.")
-        assert isinstance(value, str), "value must be None | string | a value of values.values()."
+                raise ValueError(
+                    "It the value is None, there must be a default value.")
+        assert isinstance(value, str),\
+            "value must be None | string | a value of values.values()."
         value = value.lower()
         if value in self.values:
             return self.values[value]
@@ -122,11 +131,13 @@ class StandardValue(object):
                 "More then one possibilities for '{0}'.".format(value)
                 )
 
+
 def default_value(function, argument):
     argspec = inspect.getargspec(function)
     defaults = argspec.defaults
     default_args = dict(zip(argspec.args[-len(defaults):], defaults))
     return default_args[argument]
+
 
 def decorator_generator(param, values, default=None):
     """Returns with a decorator for easier string parameter.
@@ -143,7 +154,8 @@ def decorator_generator(param, values, default=None):
 
     Example:
 
-        >>> word = decorator_generator("word", {"in":"in", "out":"aus", "ill":"Krank"})
+        >>> word = decorator_generator("word",
+                                       {"in":"in", "out":"aus", "ill":"Krank"})
         >>> @word
         ... def translate(word):
         ...     return word
@@ -160,6 +172,7 @@ def decorator_generator(param, values, default=None):
         ValueError: ...
     """
     standard_value = StandardValue(values, default)
+
     @decorators.decorator
     def decorator(fn):
         def _newfn(*args, **kwargs):
@@ -180,5 +193,5 @@ def decorator_generator(param, values, default=None):
         return _newfn
     return decorator
 
-directions = {"out": OUT, "in":IN, "all":ALL}
+directions = {"out": OUT, "in": IN, "all": ALL}
 direction = decorator_generator("mode", directions, default=ALL)

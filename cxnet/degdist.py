@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from __future__ import division
+from __future__ import print_function
 
 try:
     import gettext
@@ -23,9 +24,9 @@ else:
 import numpy
 
 import sys
-import tools
-from tools import OUT, IN, ALL
-import powerlaw
+from cxnet import tools
+from .tools import OUT, IN, ALL
+from cxnet import powerlaw
 
 #split = lambda tl: ([x for x, y in tl], [y for x, y in tl])
 split = lambda List: zip(*List)
@@ -240,11 +241,11 @@ class DegreeDistribution:
             k_min = k - 0.5
             g,s = self.exponent(k_min)
             result =  "k_min=%.1f: %f+-%f" % (k,g,s)
-            print result
+            print(result)
             K.append(k)
             G.append(g)
             S.append(s)
-        print "%f <= gamma%s <= %f" % (min(G), self.index, max(G))
+        print("%f <= gamma%s <= %f" % (min(G), self.index, max(G)))
         p = pylab.errorbar(K, G, yerr=S)
         pylab.xlabel("k_min")
         pylab.ylabel("gamma%s" % self.index)
@@ -304,7 +305,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
         if plot is None:
             plot=pylab.plot
@@ -347,7 +348,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
 
         if "label" not in kwargs:
@@ -379,7 +380,7 @@ The result of the first two examples are the same.
         try:
             dd = self.dd_smeared
         except AttributeError:
-            print self.binning_warning
+            print(self.binning_warning)
             return
         with_marker = kwargs.pop("with_marker", False)
         with_powerlaw = kwargs.pop("with_powerlaw", False)
@@ -483,7 +484,7 @@ The result of the first two examples are the same.
                     for i in range(len(self.dd))
                     ]
         else:
-            print "There is no binning called '%s'" % self.binning
+            print("There is no binning called '%s'" % self.binning)
             return
 
         self.dd_smeared = dd_smeared
@@ -556,8 +557,8 @@ if __name__ == "__main__":
     g = igraph.Graph.Barabasi(10000, 4)
     dd = DegreeDistribution(g)
     dd.summary()
-    #dd.summary("info.txt")
-    print dd.exponent()
+    # dd.summary("info.txt")
+    print(dd.exponent())
     dd.cumulative_plot(with_powerlaw=True)
     pylab.legend()
     pylab.savefig("tmp_cumulative.png")

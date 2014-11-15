@@ -3,7 +3,7 @@ import os
 debug = False
 
 # Set the graph_module.
-cxnetrc=os.path.expanduser("~/.cxnetrc.py")
+cxnetrc = os.path.expanduser("~/.cxnetrc.py")
 if os.path.isfile(cxnetrc):
     if debug:
         print("""I have found an rc file: {0}.""".format(cxnetrc))
@@ -11,52 +11,58 @@ if os.path.isfile(cxnetrc):
 if "graph_module" not in dir():
     graph_module = "igraph"
     if debug:
-        print("""The graph_module was not set in the rc file. I try to use "igraph".""")
+        print("""The graph_module was not set in the rc file. """
+              """I try to use "igraph".""")
 elif graph_module not in ["networkx", "igraph"]:
-    raise ValueError("""The graph_module in the rc file is not correct. Choose "igraph" or "networkx", please.""")
+    raise ValueError("""The graph_module in the rc file is not correct. """
+                     """Choose "igraph" or "networkx", please.""")
 else:
-    print("""The graph_module was set in the rc file to \"%s\".""" % graph_module)
+    print("""The graph_module was set in the rc file to \"%s\"."""
+          % graph_module)
 
 
 # Import useful things from the choosen module.
 if graph_module == "igraph":
     try:
-        from igraph import plot
+        from igraph import plot  # noqa
     except ImportError:
         graph_module = False
-        print("""However the graph_module was set to "igraph", I can not import it.""")
+        print("""However the graph_module was set to "igraph", """
+              """I can not import it.""")
     else:
         if debug:
             print("""I will use igraph. (It have been imported.)""")
-        #from igraphtools import igraph_from_dot
-        #from igraphtools import igraph_from_vertices_edges
-        from debnetworki import debnetwork
-        from debnetworki import Network
-        from debnetworki import load_netdata
-        import debnetworki
-        from debnetworkc import TYPES
-        from igraph import summary
+        # from igraphtools import igraph_from_dot
+        # from igraphtools import igraph_from_vertices_edges
+        from .debnetworki import debnetwork
+        from .debnetworki import Network
+        from .debnetworki import load_netdata  # noqa
+        from cxnet import debnetworki
+        from .debnetworkc import TYPES  # noqa
+        from igraph import summary # noqa
         from igraph import Graph
-        from igraph import WEAK, STRONG # for net.components
-        from igraph import OUT, IN, ALL # for net.degree
+        from igraph import WEAK, STRONG  # for net.components # noqa
+        from igraph import OUT, IN, ALL  # for net.degree # noqa
 
 elif graph_module == "networkx":
     try:
-        from networkx import diameter
+        from networkx import diameter  # noqa
     except ImportError:
         graph_module = False
-        print("""However the graph_module was set to "networkx", I can not import it.""")
+        print("""However the graph_module was set to "networkx", """
+              """I can not import it.""")
     else:
         if debug:
             print("""I will use networkx. (It have been imported.)""")
-        from networkx import barabasi_albert_graph, erdos_renyi_graph, complete_graph
-        from networkx import connected_components, connected_component_subgraphs
-        from networkx import Graph, DiGraph
-        from debnetworkx import read
-        from debnetworkx import debnetwork
-        from debnetworkx import Network
+        from networkx import barabasi_albert_graph, erdos_renyi_graph  # noqa
+        from networkx import complete_graph  # noqa
+        from networkx import connected_components, connected_component_subgraphs  # noqa
+        from networkx import Graph, DiGraph  # noqa
+        from .debnetworkx import read  # noqa
+        from .debnetworkx import debnetwork
+        from .debnetworkx import Network  # noqa
         try:
-            from networkx import draw
+            from networkx import draw  # noqa
         except ImportError:
             pass
 
@@ -69,6 +75,7 @@ def indegree_changes(network1, network2, **kwargs):
     if isinstance(outfile, str):
         pylab.savefig(outfile)
     pylab.show()
+
 
 def savepdf(fname, *args, **kwargs):
     """Saves the plot as pdf through eps file with epspdf command.
@@ -83,6 +90,7 @@ def savepdf(fname, *args, **kwargs):
     epsname = "{0}.eps".format(fname0)
     plt.savefig(epsname, *args, **kwargs)
     os.system("epspdf {0}".format(epsname))
+
 
 def savefigs(fname0, *args, **kwargs):
     """Save figures into given formats.
@@ -134,11 +142,11 @@ You can try:
 """)
 
 # Some classes and functions useful for both graph modules.
-from degdist import DegreeDistribution, split
-from archives import get_netdata, put_debnetdata
-from tools import vertex_colors
+from .degdist import DegreeDistribution, split  # noqa
+from .archives import get_netdata, put_debnetdata  # noqa
+from .tools import vertex_colors  # noqa
 
 if __name__ == "__main__":
-    dn=debnetwork()
-    dd=DegreeDistribution(dn)
+    dn = debnetwork()
+    dd = DegreeDistribution(dn)
     dn.summary()
