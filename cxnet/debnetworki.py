@@ -4,22 +4,23 @@
 from __future__ import with_statement
 from __future__ import division
 from __future__ import print_function
+from functools import reduce
 
 import math
 import igraph
 try:
-    from debnetworkc import CommonDebNetwork
+    from .debnetworkc import CommonDebNetwork
 except ImportError:
     print("""I could not import debnetworkc. Perhaps there is no apt module.
 You can not create deb dependency network.""")
 else:
-    from debnetworkc import PkgInfo
-    from debnetworkc import TYPES
-from archives import get_netdata, put_debnetdata, get_archive_name
+    from .debnetworkc import PkgInfo
+    from .debnetworkc import TYPES
+from .archives import get_netdata, put_debnetdata, get_archive_name
 
-from degdist import DegreeDistribution
+from .degdist import DegreeDistribution
 from time import strftime, gmtime
-#from os.path import getatime
+# from os.path import getatime
 import os
 import operator
 try:
@@ -28,9 +29,9 @@ except ImportError:
     linux_distribution = None
 import platform
 import pylab
-import tools
-from tools import OUT, IN, ALL
-import powerlaw
+from .tools import OUT, IN, ALL
+from .tools import direction, average_values
+from .powerlaw import plot as powerlaw_plot
 
 
 class Network(igraph.Graph):
@@ -68,12 +69,9 @@ class Network(igraph.Graph):
             self.vs["label"] = labels
         elif labels and "label" not in attributes and "name" in attributes:
             self.vs["label"] = self.vs["name"]
-        #if "label" in self.vs.attributes() and "edge_color" not in self.vs.attributes()\
-        #        and kwargs.get("edge_color") is None:
-        #    kwargs["edge_color"] = "orange"
         igraph.plot(self, target, **kwargs)
 
-    @tools.direction
+    @direction
     def cxlargest_degrees(self, mode=ALL, limit=None, print_it=False):
         """Returns with the vertices with the largest degrees.
 
@@ -127,8 +125,9 @@ class Network(igraph.Graph):
         lines.append("Degree limit: {}\n".format(limit))
         if print_it:
             for line in lines:
-                print(line[:-1]) # \n not printed
-        with open("largest_%sdegree.txt" % {OUT:"out-", IN:"in-", ALL:""}[mode], "w") as f:
+                print(line[:-1])  # \n not printed
+        with open("largest_%sdegree.txt" %
+                  {OUT: "out-", IN: "in-", ALL: ""}[mode], "w") as f:
             f.writelines(lines)
         return list_
 
@@ -156,13 +155,13 @@ class Network(igraph.Graph):
         if pkg_name not in self.vs["name"]:
             find = self.cxfind(pkg_name)
             if len(find) == 1:
-                print("""There is no package name %s.\n"""\
-                      """I will use %s instead.""" %\
+                print("""There is no package name %s.\n"""
+                      """I will use %s instead.""" %
                       (pkg_name, find[0]))
                 pkg_name = find[0]
             else:
-                print("""There is no package name %s,\n"""\
-                      """but the package names below include it.\n """\
+                print("""There is no package name %s,\n"""
+                      """but the package names below include it.\n """
                       % pkg_name, "\n ".join(find))
                 return (None, None)
         ix = self.vs["name"].index(pkg_name)
@@ -182,7 +181,8 @@ class Network(igraph.Graph):
         if "type" in self.vs.attributes():
             virtual = self.vs.select(type=1)
             for vertex in virtual:
-                for attr in ("priority", "filesize", "section", "summary", "version"):
+                for attr in ("priority", "filesize",
+                             "section", "summary", "version"):
                     vertex[attr] = None
                 if "architecture" in self.vs.attributes():
                     vertex["architecture"] = None
@@ -193,25 +193,31 @@ class Network(igraph.Graph):
 
         del self.vs["id"]
         integer_attributes = (
-                zip(("type", "filesize"), [self.vs]*3) +
-                zip(("type",), [self.es])
-                )
+            ("type", self.vs),
+            ("filesize", self.vs),
+            ("type", self.es),
+        )
         for attr, object_ in integer_attributes:
             if attr in object_.attributes():
                 for item in object_:
                     value = item[attr]
-                    if isinstance(value, float) and not math.isinf(value) and not math.isnan(value):
+                    if isinstance(value, float) and\
+                            not math.isinf(value) and not math.isnan(value):
                         item[attr] = int(value)
                     elif value is not None and (math.isinf(value) or math.isnan(value)):
-                        print("The value of the {0} attribute is {1} ({2}).".format(attr, value, item["name"]))
+                        print("The value of the {0} attribute is {1} ({2})."
+                              .format(attr, value, item["name"]))
         self.normalized = True
 
-    def cxcolorize(self, vcolors=("yellow", "lightblue"), ecolors=("orange", "red", "blue")):
+    def cxcolorize(self, vcolors=("yellow", "lightblue"),
+                   ecolors=("orange", "red", "blue")):
         "Colorize the packages according to the type (real or virtual)."
         for i in range(2):
-            assert isinstance(vcolors[i], str), "The vcolors parameter should contain two color names as string"
+            assert isinstance(vcolors[i], str),\
+                "The vcolors parameter should contain two color names as string"
         for i in range(3):
-            assert isinstance(ecolors[i], str), "The ecolors parameter should contain three color names as string"
+            assert isinstance(ecolors[i], str),\
+                "The ecolors parameter should contain three color names as string"
         self.normalize()
         if "type" in self.vs.attributes():
             for vertex in self.vs:
@@ -255,47 +261,53 @@ class Network(igraph.Graph):
         if isinstance(pkg_name, int):
             ix = pkg_name
         else:
-            assert isinstance(pkg_name, str), "pkg_name must be string or integer"
+            assert isinstance(pkg_name, str),\
+                "pkg_name must be string or integer"
             if pkg_name not in self.vs["name"]:
                 find = self.cxfind(pkg_name)
                 if len(find) == 1:
-                    print("""There is no package name %s.\nI will use %s instead.""" %\
+                    print("""There is no package name %s."""
+                          """\nI will use %s instead.""" %
                           (pkg_name, find[0]))
                     pkg_name = find[0]
                 elif len(find) > 1:
-                    print("""There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
-                            "\n ".join(find))
+                    print("""There is no package name %s,"""
+                          """\nbut the package names below include it.\n """ %
+                          pkg_name,
+                          "\n ".join(find))
                     return []
                 else:
-                    print("""There is no package name %s\nnor package name including it.""" % pkg_name)
+                    print("""There is no package name %s"""
+                          """\nnor package name including it.""" % pkg_name)
                     return []
             ix = self.vs["name"].index(pkg_name)
         s = self.successors(ix)
-        p = list(set(self.predecessors(ix)) - set(s))  #TODO should have a more elaborated method
+        # TODO should have a more elaborated method:
+        p = list(set(self.predecessors(ix)) - set(s))
         neighborhood = [ix]
         neighborhood.extend(p)
         neighborhood.extend(s)
         vs = self.vs(neighborhood)
-        #TODO Should return with a subgraph, not with VertexSeq?
+        # TODO Should return with a subgraph, not with VertexSeq?
 
         if plot:
             attributes = self.vs.attributes()
             if "color" not in attributes and "type" in attributes:
                 self.cxcolorize()
             shift = lambda y: 1 + curvature*math.cos(math.pi * y)
-            coords = [(0,0)]
+            coords = [(0, 0)]
             if p:
                 delta = 1 / (len(p) - .99)
-                y=-0.5
+                y = -0.5
                 for i in range(len(p)):
                     coords.append((-shift(y), y))
                     y += delta
             if s:
                 delta = 1/(len(s)-.99)
-                y=-0.5
+                y = -0.5
                 for i in range(len(s)):
-                    coords.append((shift(y),y))
-                    y+=delta
+                    coords.append((shift(y), y))
+                    y += delta
             vs["coord"] = coords
             subnetwork = vs.subgraph()
             return_network = kwargs.pop("return_network", False)
@@ -307,7 +319,8 @@ class Network(igraph.Graph):
                 kwargs["edge_arrow_width"] = .5
             if plot in "pdf png svg ps eps".split():
                 filename = "neighbors_of_%s.%s" % (pkg_name, plot)
-                subnetwork.plot(filename, layout=subnetwork.vs["coord"], **kwargs)
+                subnetwork.plot(filename, layout=subnetwork.vs["coord"],
+                                **kwargs)
             elif isinstance(plot, str):
                 subnetwork.plot(plot, layout=subnetwork.vs["coord"], **kwargs)
             else:
@@ -326,7 +339,7 @@ class Network(igraph.Graph):
         Returns:
             dd: DegreeDistribution class object (see help(dd) )
         """
-        return DegreeDistribution(self,**kwargs)
+        return DegreeDistribution(self, **kwargs)
 
     def cxfind(self, namepart, verbosity=None):
         """Returns the ordered list of package names containing the given part.
@@ -339,7 +352,8 @@ class Network(igraph.Graph):
             names: ordered list of strings
                 The ordered list of package names containing namepart.
         """
-        assert len(namepart) > 1, "the part of the name must contains at least 2 characters"
+        assert len(namepart) > 1,\
+            "the part of the name must contains at least 2 characters"
         names = [name for name in self.vs["name"] if namepart in name]
         names.sort()
 
@@ -349,7 +363,8 @@ class Network(igraph.Graph):
             self.pkginfo.pkginfo(names, verbosity)
         return names
 
-    def cxwrite(self, linux_distribution=linux_distribution, formats=["gml.zip", "graphmlz"]):
+    def cxwrite(self, linux_distribution=linux_distribution,
+                formats=["gml.zip", "graphmlz"]):
         """Writes the package dependency network into gml format.
 
         It writes a txt and a gml file into the current directory.
@@ -381,7 +396,8 @@ class Network(igraph.Graph):
         distribution = " ".join([d1, d2, d3])
         self["distribution"] = distribution
 
-        str_time = strftime("%Y-%m-%d_%H.%MGMT", update_time if update_time else arch_time)
+        str_time = strftime("%Y-%m-%d_%H.%MGMT",
+                            update_time if update_time else arch_time)
         name0 = "-".join([d1.lower(), d2, "packages", str_time])
         if not os.path.exists('netdata_zip'):
             os.mkdir('netdata_zip')
@@ -391,8 +407,9 @@ class Network(igraph.Graph):
             self.write(name, format="gml")
             import zipfile
             filename = os.path.join('netdata_zip', '{0}.gml.zip'.format(name0))
-            archive = zipfile.ZipFile(filename, 'w',
-                    compression=zipfile.ZIP_DEFLATED)
+            archive = zipfile.ZipFile(
+                filename, 'w',
+                compression=zipfile.ZIP_DEFLATED)
             archive.write(name)
             archive.close()
             os.remove(name)
@@ -442,9 +459,9 @@ class Network(igraph.Graph):
                  "Install it if you want to convert igraph.Graph into networkx.(Di)Graph.")
             return
         if self.is_directed():
-            net=networkx.DiGraph()
+            net = networkx.DiGraph()
         else:
-            net=networkx.Graph()
+            net = networkx.Graph()
         edges = [(names[edge.source], names[edge.target]) for edge in self.es]
         net.add_edges_from(edges)
         return net
@@ -456,13 +473,14 @@ class Network(igraph.Graph):
         """
         net = self.to_networkx()
         import networkx
-        draw_functions = {"circular": networkx.draw_circular,
-                None: networkx.draw_spring,
-                "spring": networkx.draw_spring,
-                "shell": networkx.draw_shell,
-                "spectral": networkx.draw_spectral,
-                "random": networkx.draw_random,
-                }
+        draw_functions = {
+            "circular": networkx.draw_circular,
+            None: networkx.draw_spring,
+            "spring": networkx.draw_spring,
+            "shell": networkx.draw_shell,
+            "spectral": networkx.draw_spectral,
+            "random": networkx.draw_random,
+        }
         draw = draw_functions[layout]
         draw(net, **kwargs)
         return net
@@ -477,35 +495,40 @@ class Network(igraph.Graph):
             if code is not None:
                 es = self.es.select(type=code)
                 self.delete_edges(es)
-                if test: print("\t {0} {1} deleted".format(len(es), edge_attribute))
+                if test:
+                    print("\t {0} {1} deleted".format(len(es), edge_attribute))
             else:
-                raise TypeError("edge attribute", edge_attribute) #TODO
+                raise TypeError("edge attribute", edge_attribute)  # TODO
         for vertex_attribute in vertex:
             code = TYPES["vertex"].get(vertex_attribute)
             if code is not None:
                 vs = self.vs.select(type=code)
                 self.delete_vertices(vs)
-                if test: print("\t {0} {1} deleted".format(len(vs), vertex_attribute))
+                if test:
+                    print("\t {0} {1} deleted".format(len(vs),
+                                                      vertex_attribute))
             elif vertex_attribute == "isolated":
                 isolated_vertices = [
                     c[0] for c in self.clusters(igraph.WEAK)
                     if len(c) == 1
                     ]
-                if test: print("\t {0} {1} deleted".format(len(isolated_vertices), vertex_attribute))
+                if test:
+                    print("\t {0} {1} deleted".format(
+                        len(isolated_vertices), vertex_attribute))
                 self.delete_vertices(isolated_vertices)
             elif vertex_attribute in ["i386", "amd64"]:
                 vs = self.vs.select(architecture=vertex_attribute)
                 if test:
-                    print("\t{0} vertex deleted (architecture {1})".format(len(vs), vertex_attribute))
+                    print("\t{0} vertex deleted (architecture {1})".format(
+                        len(vs), vertex_attribute))
                 self.delete_vertices(vs)
             else:
-                raise TypeError("vertex attribute", vertex_attribute) #TODO
+                raise TypeError("vertex attribute", vertex_attribute)  # TODO
 
     def cxstat_(self, attribute=None, object_="vertex"):
         "Prints the number of vertices/edges with the existing types."
         if attribute is None:
             attribute = "type"
-        typedict = TYPES.get(object_)
         if object_ == "vertex":
             object_ = self.vs
         elif object_ == "edge":
@@ -513,10 +536,11 @@ class Network(igraph.Graph):
         else:
             raise TypeError("object_ must be None, 'vertex' or 'edge'")
         statdict = dict(
-                (type_,
-                len(eval("object_.select({0}=type_)".format(attribute), dict(object_=object_, type_=type_)))
-                )
-                for type_ in set(object_[attribute]))
+            (type_,
+             len(eval("object_.select({0}=type_)".format(attribute),
+                      dict(object_=object_, type_=type_)))
+             )
+            for type_ in set(object_[attribute]))
         for key in statdict:
             print("{1:6} {0}".format(key, statdict[key]))
         return statdict
@@ -527,8 +551,9 @@ class Network(igraph.Graph):
     def estat(self, attribute=None):
         return self.cxstat_(attribute, object_="edge")
 
-    @tools.direction
-    def cxclustering_degree_plot(self, min_degree=2, with_powerlaw=-1, **kwargs):
+    @direction
+    def cxclustering_degree_plot(self, min_degree=2, with_powerlaw=-1,
+                                 **kwargs):
         """Plots the clustering coefficient as a function of degree.
 
         Parameters:
@@ -549,37 +574,43 @@ class Network(igraph.Graph):
 
         """
         direction = kwargs.pop("mode")
-        powerlaw_parameters = dict((param, kwargs.pop(param))
-                    for param
-                    in ["coeff", "powerlaw_marker", "powerlaw_linestyle"]
-                    if param in kwargs
-                )
-        coeff = kwargs.pop("coeff", None)
-        degree = {igraph.IN: self.indegree,
-                igraph.OUT: self.outdegree,
-                igraph.ALL: self.degree,
-                }[direction]
+        powerlaw_parameters = dict(
+            (param, kwargs.pop(param))
+            for param
+            in ["coeff", "powerlaw_marker", "powerlaw_linestyle"]
+            if param in kwargs
+        )
+        degree = {
+            igraph.IN: self.indegree,
+            igraph.OUT: self.outdegree,
+            igraph.ALL: self.degree,
+        }[direction]
         assert isinstance(min_degree, int), "min_degree must be integer"
         assert min_degree >= 2, "min_degree must be 2 or greater"
-        x, y = tools.average_values(degree(), self.transitivity_local_undirected())
+        x, y = average_values(degree(), self.transitivity_local_undirected())
         new_kwargs = {"marker": "o", "linestyle": ""}
         new_kwargs.update(kwargs)
         kwargs = new_kwargs
-        plot =  pylab.loglog(x, y, label="average clustering coeff.", **kwargs)
+        plot = pylab.loglog(x, y, label="average clustering coeff.", **kwargs)
         prefix = {igraph.IN: "in-", igraph.OUT: "out-"}.get(direction, "")
-        pylab.title("Clustering coefficient as a function of {0}degree".format(prefix))
+        pylab.title("Clustering coefficient as a function of {0}degree"
+                    .format(prefix))
         pylab.xlabel("{0}degree".format(prefix))
         pylab.ylabel("average clustering coefficient")
         if with_powerlaw is not None:
-            assert isinstance(with_powerlaw, (int, float)), "with_powerlaw must be int, float or None"
+            assert isinstance(with_powerlaw, (int, float)),\
+                "with_powerlaw must be int, float or None"
             kwargs["marker"] = powerlaw_parameters.pop("powerlaw_marker", "")
-            kwargs["linestyle"] = powerlaw_parameters.pop("powerlaw_linestyle", "--")
+            kwargs["linestyle"] = powerlaw_parameters.pop("powerlaw_linestyle",
+                                                          "--")
             kwargs.update(powerlaw_parameters)
-            powerlaw.plot(exponent=with_powerlaw,
-                    xmax=max(self.degree()),
-                    **kwargs
-                    )
+            powerlaw_plot(
+                exponent=with_powerlaw,
+                xmax=max(self.degree()),
+                **kwargs
+            )
         return plot
+
 
 def debnetwork():
     """Creates the network of deb packages in Linux distributions using deb packages.
@@ -591,7 +622,7 @@ def debnetwork():
     """
     cdn = CommonDebNetwork()
     print("Transforming to numbered graph.")
-    idgen = igraph.UniqueIdGenerator() # igraph/datatypes.py
+    idgen = igraph.UniqueIdGenerator()  # igraph/datatypes.py
     edgelist = [(idgen[x], idgen[y]) for x, y, t in cdn.edges]
     [idgen[vertex] for vertex in cdn.vertices]
     package_names = idgen.values()
@@ -602,10 +633,10 @@ def debnetwork():
     debnet.sources_list = cdn.sources_list
     debnet.vs["name"] = idgen.values()
     for package_name in cdn.vertices:
-         package_data = cdn.vertices[package_name]
-         if package_data:
-             vertex = debnet.vs[idgen[package_name]]
-             (vertex["priority"],
+        package_data = cdn.vertices[package_name]
+        if package_data:
+            vertex = debnet.vs[idgen[package_name]]
+            (vertex["priority"],
              vertex["filesize"],
              vertex["section"],
              vertex["summary"],
@@ -624,13 +655,14 @@ def debnetwork():
     debnet["URL"] = "http://django.arek.uni-obuda.hu/cxnet"
     debnet["sources_list"] = cdn.sources_list
     debnet["architecture"], debnet["foreign_architectures"] = \
-            ['\n'.join(archs) for archs in get_architectures()]
+        ['\n'.join(archs) for archs in get_architectures()]
     debnet["Description"] = "Dependency network of Linux software packages"
     debnet["package_format"] = "deb"
     debnet["update_time"] = strftime("%Y-%m-%d %H:%M:%S GMT", get_update_time())
     debnet["Author"] = "Arpad Horvath"
     debnet["Creator"] = "cxnet"
     return debnet
+
 
 def get_architectures():
     """Get the architecture and foreign architectures."""
@@ -642,6 +674,7 @@ def get_architectures():
         architectures.append(archs)
     return architectures
 
+
 def get_update_time():
     """Get the time of last update (last apt-get update)"""
     try:
@@ -649,6 +682,7 @@ def get_update_time():
     except OSError:
         update_time = None
     return update_time
+
 
 def load_netdata(filename):
     """Loads netdata from a gml file in netdata directory.
@@ -694,15 +728,16 @@ def load_netdata(filename):
         net.normalize()
         net["file"] = filename
         if "Description" not in net.attributes():
-            infofile=open(os.path.splitext(filepath)[0] + ".txt")
+            infofile = open(os.path.splitext(filepath)[0] + ".txt")
             net["Description"] = "".join(infofile.readlines())
         if ("name" not in net.vs.attributes() and
-            "label" in net.vs.attributes() ):
+                 "label" in net.vs.attributes()):
             net.vs["name"] = net.vs["label"]
         print("'{0}' have been loaded.".format(filepath))
         return net
     else:
         print("I can the file '{0}' neither find nor download.".format(filename))
+
 
 def indegree_list(*networks):
     """Returns with the indegree list for all the packages in the networks.
@@ -715,6 +750,7 @@ def indegree_list(*networks):
         indegrees in the order of the given networks.
 
     """
+    # TODO use for instead of reduce
     pkg_names = reduce(operator.or_, (set(net.vs["name"]) for net in networks))
     indegree_list = dict((pkg_name, []) for pkg_name in pkg_names)
     for network in networks:
@@ -723,12 +759,13 @@ def indegree_list(*networks):
             indegree_list[pkg_name].append(indegrees.get(pkg_name))
     return indegree_list
 
+
 def delta_k(network1, network2):
     """"""
     indegree_list_ = indegree_list(network1, network2)
     pairs = []
     for pkg_name in indegree_list_:
         old, new = indegree_list_[pkg_name]
-        if not None in (old, new):
+        if None not in (old, new):
             pairs.append((old, new - old))
     return pairs

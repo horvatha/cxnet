@@ -111,7 +111,7 @@ class DecoratorGenerator(unittest.TestCase):
 
     def test_exact_values(self):
         "decorator_generator should recognize exact values even if it is a prefix"
-        for key, value in values.iteritems():
+        for key, value in values.items():
             self.assertEqual(decorated_function(mode=key), value)
 
     def test_none_values(self):
@@ -203,7 +203,7 @@ class AverageValues(unittest.TestCase):
                 ( ([0, 1], [0, 2], "a"), "x_min must be integer, float or None"),
             )
         for parameters, errortext in bad_parameters:
-            self.assertRaisesRegexp(AssertionError, errortext, average_values, *parameters)
+            self.assertRaisesRegex(AssertionError, errortext, average_values, *parameters)
 
 
 if __name__ == "__main__":

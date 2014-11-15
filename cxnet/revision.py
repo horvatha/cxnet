@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import cxnet
 import subprocess
-from tools import working_directory
+from .tools import working_directory
 
 def cxnet_path():
     file_ = cxnet.__file__

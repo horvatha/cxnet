@@ -24,7 +24,7 @@ vertex_colors = [
 
 
 # @decorators.trace
-def average_values(x, y, x_min=None):
+def average_values(x, y, x_min=float("-inf")):
     """Return the average value for each x values.
 
     Parameters:
@@ -32,7 +32,7 @@ def average_values(x, y, x_min=None):
             the x values
         y: sequence (list, tuple) of numbers, numbers must be integers,
             floats or complex the y values
-        x_min: None, int or float
+        x_min: int or float
             the minimal x values to take into account
 
     Returns:

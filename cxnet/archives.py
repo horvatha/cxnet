@@ -11,7 +11,7 @@ import urllib
 import zipfile
 import os
 import igraph
-import system
+from cxnet import system
 
 baseurls = (
         "http://www.arek.uni-obuda.hu/cxnet/deb_network/",

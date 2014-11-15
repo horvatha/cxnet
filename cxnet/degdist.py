@@ -94,7 +94,7 @@ class DegreeDistribution:
         if isinstance(network_or_degree_list, (tuple, list, dict)):
             self.deg = network_or_degree_list
             for d in self.deg:
-                assert isinstance(d, (int, long)) and d >= 0
+                assert isinstance(d, int) and d >= 0
             network = None
         else:
             network = network_or_degree_list
