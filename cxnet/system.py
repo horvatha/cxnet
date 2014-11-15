@@ -15,15 +15,18 @@ default_rc_dir = dict(
     nt=os.path.expanduser("~/_cxnet"),
     )
 
-def rc_dir():
+
+def get_rc_dir():
     return default_rc_dir.get(os.name)
 
+
 def create_rc_dir():
-    rc_dir = rc_dir()
+    rc_dir = get_rc_dir()
     if rc_dir:
         if not os.path.isdir(rc_dir):
             os.mkdir(rc_dir)
     else:
-        raise NotImplementedError("To create an rc directory on your platform is not implemneted yet.")
+        raise NotImplementedError(
+            "To create an rc directory "
+            "on your platform is not implemented yet.")
     return rc_dir
-
