@@ -7,6 +7,7 @@ import cxnet
 import unittest
 import os
 
+
 class DebNetworkFunction(unittest.TestCase):
     """If we create the network during the test."""
 
@@ -16,12 +17,12 @@ class DebNetworkFunction(unittest.TestCase):
     def test_types(self):
         "debnetwork should set the proper attributes"
         types = (
-                ("vim", 0),
-                ("nano", 0),
-                ("firefox", 0),
-                ("editor", 1),
-                ("www-browser", 1),
-                )
+            ("vim", 0),
+            ("nano", 0),
+            ("libc6", 0),
+            ("editor", 1),
+            ("www-browser", 1),
+        )
         self.net.cxcolorize()
         for name, _type in types:
             vertex = self.net.vs.select(name=name)[0]
@@ -32,6 +33,7 @@ class DebNetworkFunction(unittest.TestCase):
                 self.assertEqual(vertex["color"], "lightblue")
 
 path = os.path.split(__file__)[0]
+
 
 class DebNetworkFromGML(unittest.TestCase):
     """If we read from GML."""
@@ -68,6 +70,7 @@ class DebNetworkFromGML(unittest.TestCase):
     def test_plots(self):
         for plot in "pdf svg png".split():
             self.net.cxneighborhood("nn", plot=plot)
+
 
 class NetworkSimplify(unittest.TestCase):
     """net.simplify(nodes, edges) function"""
@@ -145,6 +148,7 @@ def suite():
         debnetfunction_suite,
         fromgml_suite,
         simplify_suite])
+
 
 def test():
     runner = unittest.TextTestRunner()
