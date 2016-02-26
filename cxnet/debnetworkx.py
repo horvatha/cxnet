@@ -11,7 +11,7 @@ except ImportError:
 You can not create deb dependency network.""")
 
 from .degdist import DegreeDistribution
-from time import strftime, gmtime
+# from time import strftime, gmtime
 try:
     from platform import linux_distribution
 except ImportError:
@@ -49,13 +49,14 @@ class Network(networkx.DiGraph):
         if pkg_name not in self:
             find = self.cxfind(pkg_name)
             if len(find) == 1:
-                print("""There is no package name %s.\nI will use %s instead.""" %
+                print("There is no package name %s.\n"
+                      "I will use %s instead." %
                       (pkg_name, find[0]))
                 pkg_name = find[0]
             else:
                 print("There is no package name %s,\n"
                       "but the package names below include it.\n " % pkg_name,
-                        "\n ".join(find))
+                      "\n ".join(find))
                 return []
         subgraph = networkx.ego_graph(self, pkg_name, undirected=1)
 
@@ -63,7 +64,12 @@ class Network(networkx.DiGraph):
             node_color = kwargs.get("node_color", "skyblue")
             font_color = kwargs.get("font_color", "red")
             prog = kwargs.get("prog", "dot")
-            networkx.draw_graphviz(subgraph, prog=prog, root=pkg_name, font_color=font_color, node_color=node_color)
+            networkx.draw_graphviz(
+                subgraph,
+                prog=prog,
+                root=pkg_name,
+                font_color=font_color,
+                node_color=node_color)
 
         return subgraph
 
@@ -80,7 +86,7 @@ class Network(networkx.DiGraph):
         -------
         dd: DegreeDistribution class object (see help(dd) )
         """
-        return DegreeDistribution(self,**kwargs)
+        return DegreeDistribution(self, **kwargs)
 
     def cxfind(self, namepart):
         """Returns the ordered list of package names containing the given part.
@@ -98,6 +104,7 @@ class Network(networkx.DiGraph):
         names = [name for name in self if namepart in name]
         names.sort()
         return names
+
 
 def read(name):
     """Reads deb-network from the gml-file written by igraph.
@@ -120,6 +127,7 @@ def read(name):
     network = networkx.read_gml(newname)
     # It should return a Network object instead of DiGraph
     return network
+
 
 def debnetwork():
     cdn = CommonDebNetwork()
