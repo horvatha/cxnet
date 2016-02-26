@@ -1,19 +1,22 @@
 from __future__ import with_statement
 from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 import networkx
 try:
-    from debnetworkc import CommonDebNetwork
+    from .debnetworkc import CommonDebNetwork
 except ImportError:
-    print """I could not import debnetworkc. Perhaps there is no apt module.
-You can not create deb dependency network."""
+    print("""I could not import debnetworkc. Perhaps there is no apt module.
+You can not create deb dependency network.""")
 
-from degdist import DegreeDistribution
+from .degdist import DegreeDistribution
 from time import strftime, gmtime
 try:
     from platform import linux_distribution
 except ImportError:
     linux_distribution = None
+
 
 class Network(networkx.DiGraph):
     """Complex Network, NetworkX version
@@ -24,7 +27,9 @@ class Network(networkx.DiGraph):
     """
 
     def summary(self):
-        text = "%d nodes, %d edges, directed\n" % (self.number_of_nodes(), self.number_of_edges())
+        text = "%d nodes, %d edges, directed\n" % (
+            self.number_of_nodes(), self.number_of_edges()
+        )
         return text
 
     def cxneighborhood(self, pkg_name, plot=False, **kwargs):
@@ -36,7 +41,7 @@ class Network(networkx.DiGraph):
             The name of the package.
         plot: boolean or string, default False
             If it is "pdf", the output will be a file like pkg_name.pdf.
-            If other string, the output will be a file named in the string. 
+            If other string, the output will be a file named in the string.
             If True, plot to the screen.
             If False, do not plot.
 
@@ -44,12 +49,13 @@ class Network(networkx.DiGraph):
         if pkg_name not in self:
             find = self.cxfind(pkg_name)
             if len(find) == 1:
-                print """There is no package name %s.\nI will use %s instead.""" %\
-                      (pkg_name, find[0])
-                pkg_name = find[0] 
+                print("""There is no package name %s.\nI will use %s instead.""" %
+                      (pkg_name, find[0]))
+                pkg_name = find[0]
             else:
-                print """There is no package name %s,\nbut the package names below include it.\n """ % pkg_name,\
-                        "\n ".join(find)
+                print("There is no package name %s,\n"
+                      "but the package names below include it.\n " % pkg_name,
+                        "\n ".join(find))
                 return []
         subgraph = networkx.ego_graph(self, pkg_name, undirected=1)
 
@@ -69,7 +75,7 @@ class Network(networkx.DiGraph):
         kwargs:
             parameters to the DegreeDistribution class
             Eg. direction {"in", "out", None}
-        
+
         Returns
         -------
         dd: DegreeDistribution class object (see help(dd) )
@@ -119,11 +125,10 @@ def debnetwork():
     cdn = CommonDebNetwork()
     if not cdn.has_purged_edges:
         cdn.purge_edges()
-    print "Transforming to networkx."
-    debnet=Network()
+    print("Transforming to networkx.")
+    debnet = Network()
     debnet.add_nodes_from(cdn.vertices)
-    debnet.add_edges_from(cdn.edges)
+    debnet.add_edges_from([(e[0], e[1]) for e in cdn.edges])
     debnet.sources_list = cdn.sources_list
     debnet.type = "networkx"
     return debnet
-
