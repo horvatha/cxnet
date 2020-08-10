@@ -6,14 +6,13 @@ cxnet -- Összetett hálózatok az oktatásban
 =====================================================================
 
 :Szerző: Horváth Árpád
-:Levélcím: horvath.arpad kukac roik.bmf.hu
+:Levélcím: horvath.arpad.szfvar kukac gmail.com
 :Dátum: 2010. nyár
 
 `In English (angolul) <install_en.html>`_
 
 A telepítés részleteiben sokminden elavult lehet. Az angol változat
-vagy az Ubuntu telepítése az Összetett hálózatok tantárgyhoz hasznos
-iránymutató lehet.
+hasznos iránymutató lehet.
 
 Előkövetelmények
 ================
@@ -43,25 +42,18 @@ Egyik lehetőség, hogy a szokásos telepítési módszert alkalmazzuk. Letöltj
 forrást (.tar.gz) `a Python Package Indexről
 <http://pypi.python.org/pypi/cxnet>`_ és telepítjük::
 
-  wget http://pypi.python.org/packages/source/c/cxnet/cxnet-0.2.tar.gz
-  tar xzf cxnet-0.2.tar.gz
-  cd cxnet-0.2
+  wget http://pypi.python.org/packages/source/c/cxnet/cxnet-0.3.1.tar.gz
+  tar xzf cxnet-0.3.1.tar.gz
+  cd cxnet-0.3.1
   python setup.py install
 
 UNIX/Linux rendszereken az utolsó lépéshez adminisztártornak kell lenni, tehát
 használja a su vagy sudo parancsok egyikét, ha nem root.
 
-A network evolution használatához a forráskönyvtárban kell dolgozni, úgyhogy ez a módszer
-ajánlatos, vagy a `Bazaar-ral <http://bazaar.canonical.com>`_ történő letöltés::
-
-    bzr branch http://www.arek.uni-obuda.hu/cxnet
-
 A másik lehetőség a telepítére, ha telepítve van az easy-install vagy a pip
 akkor csak a megfelelő sort kell beírni::
 
-  easy-install cxnet
-  or
-  pip install cxnet
+  pip3 install cxnet
 
 Ezekhez szintén adminisztrátornak kell lenni a UNIX/Linux rendszereken.
 
@@ -164,8 +156,7 @@ Ez a MATLAB fél gigabájtjához képest elenyésző, és `szabad
 szoftver <http://hu.wikipedia.org/wiki/szabad_szoftver>`_.
 Vannak hiányosságai a MATLAB-hoz képest (pl. háromdimenziós grafikonok,
 felületek ábrázolása), de előnyei is (pl. a python összes csomagja
-használható, CGI-szkriptbe vagy Django-oldalba ágyazhatjuk a
-programunkat.
+használható, Flask vagy Django-oldalba ágyazhatjuk a programunkat.
 (Itt és a továbbiakban a $ csak a parancsértelmező (shell) promptját jelöli,
 nem kell beírni.)::
 

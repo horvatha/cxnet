@@ -13,11 +13,8 @@ Introduction
 ===============
 
 The cxnet package extends igraph module with some functionality.
-It in intended to use in higher education.
-Some functionality is available with NetworkX module as well.
+(Some functionality is available with NetworkX module as well.)
 Function plotting needs matplotlib (pylab).
-
-It provides two modules: cxnet and mfng.
 
 Functionalities:
 
@@ -35,7 +32,7 @@ Mail to the author
 ========================
 
 `Use the email here
-<http://www.arek.uni-obuda.hu/~horvatha/elerhetoseg.html>`_
+<https://pyedu.hu/arpad/email.png>`_
 
 Requirements
 ==================================================
@@ -46,50 +43,23 @@ Requirements
     The dependencies of the cxnet package
 
 To most of the functionality of cxnet you need to have
-`igraph <http://igraph.sourceforge.net>`_ or `NetworkX <http://networkx.lanl.gov/>`_ installed. We prefer igraph.
-The installation of igraph is `detailed on Wikidot <http://igraph.wikidot.com/installing-python-igraph>`_.
+`igraph <http://igraph.sourceforge.net>`_ or `NetworkX <http://networkx.lanl.gov/>`_ installed.
+We prefer igraph. The NetworkX version might be outdated.
 
 Some functionality needs:
 
 * `the matplotlib plotting tool (including pylab)
-  <http://matplotlib.sourceforge.net/>`_, if you want to plot functions
-  like in MATLAB, analyzing the results of the mfng runs,
+  <http://matplotlib.sourceforge.net/>`_, if you want to plot functions,
 * `the ipython interactive Python shell <http://ipython.scipy.org/moin/>`_
 * `python-apt <http://apt.alioth.debian.org/python-apt-doc/>`_, if you
   want to create deb software package dependency network
 
-cxnet and mfng needs Python version 2.6 or newer but these packages do
-not run with Python 3 yet. Most functionalities work perhaps with Python
-2.5 as well.
+cxnet needs Python 3.
 
 ..
         * `python-pygraphviz <http://pypi.python.org/pypi/pygraphviz>`_, not too
           important, just if you want plot graphs with graphviz, or in NetworkX
           with the help of graphviz.
-
-Latest igraph installation on Ubuntu 12.04
-==============================================
-
-You just need to write into the shell (you need to log in as a user
-with administrator privilege)::
-
-    sudo add-apt-repository ppa:igraph
-    sudo apt-get update
-    sudo apt-get install python-igraph
-
-Latest igraph installation on Debian
-=====================================
-
-Search the latest nightly builds for the C core and the python binding
-at http://igraph.googlecode.com ,
-and download them for example like::
-
-    wget http://igraph.googlecode.com/files/igraph-nightly-0.6-2540-20110829.tar.gz
-    wget http://igraph.googlecode.com/files/python-igraph_nightly_0.6-2540-20110829.tar.gz
-
-And follow the instructions at (the Debian Lenny section, build from source):
-
-http://igraph.wikidot.com/installing-python-igraph-on-linux#toc2
 
 
 Installation
@@ -107,6 +77,12 @@ difficult. If you can not figure out how, ask the author for help.
   For Windows you can install the older version (next section) as well.
 
 Step 1.
+
+Install igraph::
+
+  pip3 install python-igraph
+
+Step 2.
 You need to have the git version control system, otherwise you can use
 only the older version (next section).
 On Debian and Ubuntu you can get the git and some other useful packages
@@ -115,14 +91,19 @@ with the commands::
   sudo apt-get install git gitk
   sudo apt-get install ipython python-matplotlib python-apt
 
-Step 2.
+Step 3.
+
+You can install the cxnet using pip::
+
+  pip3 install cxnet
+
 You can download the ``cxnet`` and ``mfng`` separately from the github
 repository::
 
   git clone http://github.com/horvatha/cxnet
   git clone http://github.com/horvatha/mfng
 
-Step 3.
+
 If you have administrator privilege, you can install the cxnet globally
 (you do not need sudo if you logged in as root)::
 
