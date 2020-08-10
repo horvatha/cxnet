@@ -12,7 +12,6 @@ if sys.version_info < (2, 6):
 
 description="""
 The cxnet extends IGraph module with some functionality
-I am using in higher education.
 Some functionality is available with NetworkX module as well.
 Function plotting needs matplotlib (pylab).
 
@@ -30,14 +29,14 @@ Functionalities:
 
 options = dict(
     name = 'cxnet',
-    version = '0.3',
+    version = '0.3.1',
     description = 'Complex networks in education',
     long_description = description,
     license = 'BSD License',
 
     author = 'Arpad Horvath',
     author_email = 'horvath.arpad.szfvar@gmail.com',
-    url = 'http://www.arek.uni-obuda.hu/cxnet/doc/html',
+    url = 'http://pyedu.hu/cxnet/doc/html',
 
     #package_dir = {'igraph': 'igraph'},
     packages = ['cxnet' ], #, 'oldmfng', 'network_evolution'],
