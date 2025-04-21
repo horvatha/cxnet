@@ -13,7 +13,7 @@ import os
 from .system import get_rc_dir
 
 baseurls = (
-    "http://www.arek.uni-obuda.hu/cxnet/deb_network/",
+    "https://pyedu.hu/cxnet/debnet/",
     "http://www-personal.umich.edu/~mejn/netdata/",
 )
 
@@ -33,23 +33,11 @@ network_archives = {
     "deb": (
         baseurls[:1],
         """
-        ubuntu-12.04-packages-2012-04-26
-        ubuntu-11.04-packages-2012-05-14
-        ubuntu-11.10-packages-2012-04-25
-        ubuntu-11.04-packages-2012-04-25
-        ubuntu-11.04-packages-2011-09-20
-        ubuntu-11.04-packages-2011-09-19
-        ubuntu-10.10-packages-2011-05-01
-        ubuntu-10.04-packages-2012-05-14
-        ubuntu-10.04-packages-2010-10-25
-        ubuntu-10.04-packages-2010-09-17
-        ubuntu-10.04-packages-2010-08-19
-        ubuntu-9.10-packages-2010-07-22
-        ubuntu-9.10-packages-2010-07-16
-        ubuntu-8.04-packages-2011-01-28
-        debian-6.0-packages-2011-12-07
-        debian-6.0-packages-2011-11-16
-        debian-6.0-packages-2011-02-03
+        debian-6.0.4-packages-2012-07-10_06.12GMT.graphmlz
+        ubuntu-12.04-packages-2012-07-18_21.06GMT.graphmlz
+        ubuntu-7.10-packages-2008-08-29.zip
+        ubuntu-8.04-packages-2011-01-28.zip
+        ubuntu-9.04-packages-2009-11-03.zip
         """.split()
     ),
     "olddeb": (
@@ -222,7 +210,7 @@ Use one of them:""")
 def put_debnetdata():
     """Put the data of debian package dependency network into the archive.
     """
-    print("""Send them to Arpad Horvath <horvath.arpad@arek.uni-obuda.hu>.""")
+    print("""Send them to Arpad Horvath <horvath.arpad.szfvar@gmail.com>.""")
 
 
 def get_netdata_directory():

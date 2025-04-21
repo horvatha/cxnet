@@ -43,7 +43,7 @@ Requirements
     The dependencies of the cxnet package
 
 To most of the functionality of cxnet you need to have
-`igraph <http://igraph.sourceforge.net>`_ or `NetworkX <http://networkx.lanl.gov/>`_ installed.
+`igraph <http://igraph.org>`_ or `NetworkX <https://networkx.github.io/documentation/stable/>`_ installed.
 We prefer igraph. The NetworkX version might be outdated.
 
 Some functionality needs:
